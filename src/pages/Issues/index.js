@@ -1,7 +1,18 @@
-import React, {useState, useEffect} from 'react';
-import { Text, View, StyleSheet, FlatList, Image, Button, TouchableOpacity, Alert } from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import { RefreshControl, SafeAreaView, Text, View, StyleSheet, FlatList, Image, Button, TouchableOpacity, Alert } from 'react-native';
+
+const wait = (timeout) => {
+  return new Promise(resolve => setTimeout(resolve, timeout));
+}
 
 export default function Issues({navigation}) {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    wait(1500).then(() => setRefreshing(false));
+  }, []);
+
   // Menampung data dari API
   const [data, setData] = useState([]);
 
@@ -73,15 +84,22 @@ export default function Issues({navigation}) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         ListHeaderComponent={ListHeaderComponent}
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.slug}
         ListFooterComponent={ListFooterComponent}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -89,6 +107,9 @@ export default function Issues({navigation}) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1
+  },
+  containerFlat: {
     flex: 1,
     padding: 8,
   },
