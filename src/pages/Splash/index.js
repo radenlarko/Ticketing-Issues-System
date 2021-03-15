@@ -5,7 +5,7 @@ import { BgSplash, LogoWhite } from '../../assets'
 const Splash = ({navigation}) => {
     useEffect(() => {
         setTimeout(() => {
-            navigation.replace('MainApp')
+            navigation.replace('MainTabApp')
         }, 2000)
     }, [navigation]);
     return (

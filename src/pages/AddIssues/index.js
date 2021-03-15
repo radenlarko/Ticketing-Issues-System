@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 
 const AddIssues = ({ navigation }) => {
     const [title, setTitle] = useState('');
@@ -37,6 +37,11 @@ const AddIssues = ({ navigation }) => {
         .then(() => {
             setLoading(false);
             console.log('Berhasil Post: ', dataPost)
+            setTitle('')
+            setDescription('')
+            setAssign_to('')
+            setCategory('')
+            setPriority('')
             navigation.navigate('Issues')
         })
         .catch((error) => {
@@ -44,7 +49,7 @@ const AddIssues = ({ navigation }) => {
         });
     };
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Text style={styles.title}>ADD ISSUES</Text>
             <TextInput
                 placeholder={'enter title'}
@@ -83,14 +88,15 @@ const AddIssues = ({ navigation }) => {
                     </Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.navigate('Issues', {screen: 'Issues'})}>
                 <View style={[styles.button, { backgroundColor: 'grey' }]}>
                     <Text style={styles.buttonText}>
                         Back
                     </Text>
                 </View>
             </TouchableOpacity>
-        </View>
+            <View style={{marginVertical: 20}}></View>
+        </ScrollView>
     )
 }
 

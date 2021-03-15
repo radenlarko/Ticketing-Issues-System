@@ -1,34 +1,45 @@
-import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Issues, Account, Splash, DetailsIssues, AddIssues } from '../pages';
-import { BottomNavigator } from '../components';
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
-const MainApp = () => {
-    return (
-        <Tab.Navigator tabBar={(props) => <BottomNavigator {...props} />}>
-            <Tab.Screen name="Home" component={Home} />
-            <Tab.Screen name="Issues" component={Issues} />
-            <Tab.Screen name="Account" component={Account} />
-        </Tab.Navigator>
-    )
-}
+import MainTabApp from './MainTabApp';
+import DrawerContent from './DrawerContent';
 
 const Router = () => {
-    return (
-        <Stack.Navigator initialRouteName="Splash">
-            <Stack.Screen name="Splash" component={Splash} options={{headerShown: false}} />
-            <Stack.Screen name="MainApp" component={MainApp} options={{headerShown: false}} />
-            <Stack.Screen name="DetailsIssues" component={DetailsIssues} options={{headerShown: false}} />
-            <Stack.Screen name="AddIssues" component={AddIssues} options={{headerShown: false}} />
-        </Stack.Navigator>
-    )
-}
+  return (
+    <Drawer.Navigator
+      initialRouteName="HomeDrawer"
+      drawerContent={(props) => <DrawerContent {...props} />}>
+      <Drawer.Screen name="HomeDrawer" component={MainTabApp} />
+    </Drawer.Navigator>
+  );
+};
 
-export default Router
+export default Router;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
+
+// import React from 'react'
+// import { StyleSheet, Text, View } from 'react-native'
+// import { createStackNavigator } from '@react-navigation/stack';
+// import { Splash, DetailsIssues, AddIssues } from '../pages';
+// import MainTabApp from './MainTabApp';
+
+// const Stack = createStackNavigator();
+
+// const Router = () => {
+//     return (
+//         <Stack.Navigator initialRouteName="Splash">
+//             <Stack.Screen name="Splash" component={Splash} options={{headerShown: false}} />
+//             <Stack.Screen name="MainTabApp" component={MainTabApp} options={{headerShown: false}} />
+//             <Stack.Screen name="DetailsIssues" component={DetailsIssues} options={{headerShown: false}} />
+//             <Stack.Screen name="AddIssues" component={AddIssues} options={{headerShown: false}} />
+//         </Stack.Navigator>
+//     )
+// }
+
+// export default Router
+
+// const styles = StyleSheet.create({})
