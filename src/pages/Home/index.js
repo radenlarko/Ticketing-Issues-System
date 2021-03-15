@@ -1,18 +1,18 @@
 import React from 'react'
-import { StyleSheet, Text, View, Button } from 'react-native'
+import { StyleSheet, Text, View, Button, SafeAreaView } from 'react-native'
 import Icons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
 
 const Home = ({navigation}) => {
       return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <View style={{flexDirection: "row"}}>
                     <Icons name="person" size={30} color="#055F9D" />
                     <Iconss name="rocket" size={30} color="#055F9D" />
                 </View>
                 <Text>Home Page</Text>
                 <Button title="Add Issue" onPress={() => navigation.navigate('Issues', { screen: 'AddIssues' })} />
-            </View>
+            </SafeAreaView>
         )
     }
     

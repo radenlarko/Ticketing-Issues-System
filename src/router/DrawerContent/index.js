@@ -20,9 +20,9 @@ const DrawerContent = (props) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" backgroundColor="#055F9D" />
-      <DrawerContentScrollView {...props}>
+    <View style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
+      <DrawerContentScrollView {...props} >
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
             <View style={{ flexDirection: 'row', marginTop: 15 }}>
@@ -161,7 +161,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   bottomDrawerSection: {
-    marginBottom: 15,
     borderTopColor: '#F4F4F4',
     borderTopWidth: 1,
   },
