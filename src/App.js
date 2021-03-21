@@ -49,18 +49,15 @@ const App = () => {
 
   const authContext = useMemo(
     () => ({
-      signIn: async (userName, password) => {
+      signIn: async (foundUser) => {
         // setUserToken('jadhajd'),
         // setIsLoading(false)
-        let userToken;
-        userToken = null;
-        if (userName == 'user' && password == 'pass') {
-          try {
-            userToken = 'jadhajd';
-            await AsyncStorage.setItem('userToken', userToken);
-          } catch (err) {
-            console.log(err);
-          }
+        const userToken = String(foundUser[0].userToken);
+        const userName = foundUser[0].userName;
+        try {
+          await AsyncStorage.setItem('userToken', userToken)
+        } catch(err) {
+          console.log(err);
         }
         console.log('user token: ', userToken);
         dispatch({type: 'LOGIN', id: userName, token: userToken});
@@ -69,7 +66,7 @@ const App = () => {
         // setUserToken(null),
         // setIsLoading(false)
         try {
-          await AsyncStorage.removeItem('userToken');
+          await AsyncStorage.removeItem('userName');
         } catch (err) {
           console.log(err);
         }
@@ -109,8 +106,8 @@ const App = () => {
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-      {loginState.userToken !== null ? (
-        <Router /> )
+      {loginState.userToken !== null ?
+        <Router />
       :  <RootRouter /> 
       }
       </NavigationContainer>

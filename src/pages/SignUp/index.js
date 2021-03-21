@@ -8,6 +8,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -67,6 +68,7 @@ const SignUp = ({navigation}) => {
       };
   return (
     <ScrollView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
       <Text
         style={{
           textAlign: 'center',

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ImageBackground, StyleSheet, Image, Text } from 'react-native'
+import { ImageBackground, StyleSheet, Image, Text, StatusBar } from 'react-native'
 import { BgSplash, LogoWhite } from '../../assets'
 
 const Splash = ({navigation}) => {
@@ -10,6 +10,7 @@ const Splash = ({navigation}) => {
     }, [navigation]);
     return (
         <ImageBackground source={BgSplash} style={styles.background}>
+            <StatusBar barStyle="light-content" backgroundColor="#055f9d" />
             <Image source={LogoWhite} style={styles.logo} />
             <Text style={styles.slogan}>Powered by ADYAWINSA</Text>
         </ImageBackground>
