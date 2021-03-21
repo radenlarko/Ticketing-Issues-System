@@ -1,1 +1,3 @@
 adb -s emulator-5554 reverse tcp:8000 tcp:8000
+
+adb -s RR8N105YA2V reverse tcp:8000 tcp:8000
