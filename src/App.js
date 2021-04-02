@@ -66,7 +66,7 @@ const App = () => {
         // setUserToken(null),
         // setIsLoading(false)
         try {
-          await AsyncStorage.removeItem('userName');
+          await AsyncStorage.removeItem('userToken');
         } catch (err) {
           console.log(err);
         }
