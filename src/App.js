@@ -1,10 +1,11 @@
-import React, {useEffect, useMemo, useReducer} from 'react';
+import React, { useEffect, useMemo, useReducer } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {View, ActivityIndicator} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import Router from './router';
 import RootRouter from './router/RootRouter';
-import {AuthContext} from './components/AuthContext';
+import { AuthContext } from './components/AuthContext';
+import { Splash2 } from './pages';
 
 const App = () => {
   const initialLoginState = {
@@ -56,11 +57,11 @@ const App = () => {
         const userName = foundUser[0].userName;
         try {
           await AsyncStorage.setItem('userToken', userToken)
-        } catch(err) {
+        } catch (err) {
           console.log(err);
         }
         console.log('user token: ', userToken);
-        dispatch({type: 'LOGIN', id: userName, token: userToken});
+        dispatch({ type: 'LOGIN', id: userName, token: userToken });
       },
       signOut: async () => {
         // setUserToken(null),
@@ -70,7 +71,7 @@ const App = () => {
         } catch (err) {
           console.log(err);
         }
-        dispatch({type: 'LOGOUT'});
+        dispatch({ type: 'LOGOUT' });
       },
       signUp: () => {
         // setUserToken('jadhajd'),
@@ -91,25 +92,23 @@ const App = () => {
         console.log(err);
       }
       console.log('user token: ', userToken);
-      dispatch({type: 'RETRIEVE_TOKEN', token: userToken});
+      dispatch({ type: 'RETRIEVE_TOKEN', token: userToken });
     }, 1000);
   }, []);
 
   if (loginState.isLoading) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" />
-      </View>
+      <Splash2 />
     );
   }
 
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-      {loginState.userToken !== null ?
-        <Router />
-      :  <RootRouter /> 
-      }
+        {loginState.userToken !== null ?
+          <Router />
+          : <RootRouter />
+        }
       </NavigationContainer>
     </AuthContext.Provider>
   );
