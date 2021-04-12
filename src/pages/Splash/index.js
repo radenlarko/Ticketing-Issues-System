@@ -9,11 +9,6 @@ const Splash = ({navigation}) => {
         }, 500)
     }, [navigation]);
     return (
-        // <ImageBackground source={BgSplash} style={styles.background}>
-        //     <StatusBar barStyle="light-content" backgroundColor="#055f9d" />
-        //     <Image source={LogoWhite} style={styles.logo} />
-        //     <Text style={styles.slogan}>Powered by ADYAWINSA</Text>
-        // </ImageBackground>
         <ImageBackground source={BgSplash} style={{ flex: 1 }}>
             <StatusBar barStyle="light-content" backgroundColor="#055f9d" />
             <View style={styles.header}>

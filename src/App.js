@@ -50,11 +50,11 @@ const App = () => {
 
   const authContext = useMemo(
     () => ({
-      signIn: async (foundUser) => {
+      signIn: async (login) => {
         // setUserToken('jadhajd'),
         // setIsLoading(false)
-        const userToken = String(foundUser[0].userToken);
-        const userName = foundUser[0].userName;
+        const userToken = String(login.token);
+        const userName = login.username;
         try {
           await AsyncStorage.setItem('userToken', userToken)
         } catch (err) {
@@ -67,7 +67,36 @@ const App = () => {
         // setUserToken(null),
         // setIsLoading(false)
         try {
-          await AsyncStorage.removeItem('userToken');
+          const getTokenLogout = await AsyncStorage.getItem('userToken')
+          console.log(`token logout : ${getTokenLogout}`)
+          await fetch('http://localhost:8000/api/users/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+              token: String(getTokenLogout)
+            }),
+          })
+            .then((response) => response.json())
+            .then((json) => {
+              console.log(json);
+              if(json.code === 200){
+                console.log(json.code + ' ' + json.message)
+                AsyncStorage.removeItem('userToken');
+              } else if (json.code === 403){
+                console.log(json.code + ' ' + json.message)
+                Alert.alert(String(json.code), json.message, [
+                  { text: 'Ok' }
+                ]);
+              } else {
+                console.log('gagal logout dari Server')
+                Alert.alert('Error!', 'gagal logout dari Server', [
+                  { text: 'Ok' }
+                ]);
+              }
+            });
         } catch (err) {
           console.log(err);
         }

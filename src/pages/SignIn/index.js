@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,9 +14,15 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../../components/AuthContext';
-import Users from '../../models/Users';
+// import Users from '../../models/Users';
 
-const SignIn = ({navigation}) => {
+const SignIn = ({ navigation }) => {
+  const [login, setLogin] = useState({
+    email: '',
+    username: '',
+    token: '',
+  });
+
   const [data, setData] = useState({
     email: '',
     password: '',
@@ -47,7 +53,7 @@ const SignIn = ({navigation}) => {
   };
 
   const handlePasswordChange = (value) => {
-    if ( value.trim().length >= 8 ) {
+    if (value.trim().length >= 8) {
       setData({
         ...data,
         password: value,
@@ -69,29 +75,63 @@ const SignIn = ({navigation}) => {
     });
   };
 
-  const loginHandle = (userName, password) => {
-    const foundUser = Users.filter( item => {
-      return userName == item.email && password == item.password;
-    });
-
-    if ( data.email.length == 0 || data.password.length == 0){
-      Alert.alert('Wrong Input!', 'Username or Password field cannot be empty', [
-        {text: 'Ok'}
+  const loginHandle = async () => {
+    const dataLogin = {
+      user: {
+        email: data.email,
+        password: data.password,
+      },
+    };
+    try {
+      await fetch('http://localhost:8000/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify(dataLogin),
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          // console.log(json.user);
+          if (json.errors) {
+            Alert.alert('Wrong Input!', 'Username or Password field cannot be empty', [
+              { text: 'Ok' }
+            ]);
+            console.log('Email or Password cannot be empty!')
+          } else {
+            if (json.data === null) {
+              Alert.alert(String(json.code), json.message, [
+                { text: 'Ok' }
+              ]);
+              console.log(json.code + ' ' + json.message);
+              setLogin({
+                email: '',
+                username: '',
+                token: '',
+              });
+            } else {
+              setLogin(json.user);
+              console.log(`Token: ${login.token}`)
+            }
+          }
+        });
+    } catch (error) {
+      console.log('error 404 : ', error);
+      Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+        { text: 'Ok' }
       ]);
-      return;
+      
     }
-
-    if ( foundUser.length == 0 ){
-      Alert.alert('Invalid User', 'Username or Password is incorrect', [
-        {text: 'Ok'}
-      ]);
-      return;
+    if (login.token.length === 0) {
+      console.log('gagal login')
+    } else {
+      signIn(login);
     }
-    signIn(foundUser);
   }
 
   const handleValidUser = (value) => {
-    if ( value.trim().length >= 6 ) {
+    if (value.trim().length >= 6) {
       setData({
         ...data,
         isValidUser: true
@@ -105,7 +145,7 @@ const SignIn = ({navigation}) => {
   }
 
   const handleValidPassword = (value) => {
-    if ( value.trim().length >= 8 ) {
+    if (value.trim().length >= 8) {
       setData({
         ...data,
         isValidPassword: true
@@ -140,14 +180,14 @@ const SignIn = ({navigation}) => {
           onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
         />
         {data.check_textInputChange ?
-        <Feather name="check-circle" color="#24e35e" size={16} />
-        : null}
+          <Feather name="check-circle" color="#24e35e" size={16} />
+          : null}
       </View>
       {data.isValidUser ? null :
         <View>
           <Text style={styles.errMsg}>Email must be in the correct format.</Text>
         </View>
-        }
+      }
       <View style={styles.action}>
         <FontAwesome name="lock" color="grey" size={22} />
         <TextInput
@@ -162,26 +202,26 @@ const SignIn = ({navigation}) => {
           {data.secureTextEntry ? (
             <Feather name="eye-off" color="grey" size={16} />
           ) : (
-            <Feather name="eye" color="grey" size={16} />
-          )}
+              <Feather name="eye" color="grey" size={16} />
+            )}
         </TouchableOpacity>
       </View>
       {data.isValidPassword ? null :
         <View>
           <Text style={styles.errMsg}>Password must be 8 characters long.</Text>
         </View>
-        }
-      <TouchableOpacity onPress={() => {loginHandle(data.email, data.password)}}>
+      }
+      <TouchableOpacity onPress={() => { loginHandle() }}>
         <View style={styles.button}>
           <Text style={styles.buttonText}>Sign In</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <View style={[styles.button, {backgroundColor: 'grey'}]}>
+        <View style={[styles.button, { backgroundColor: 'grey' }]}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </View>
       </TouchableOpacity>
-      <View style={{marginVertical: 20}}></View>
+      <View style={{ marginVertical: 20 }}></View>
     </ScrollView>
   );
 };
@@ -217,7 +257,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   errMsg: {
-    fontSize: 12, 
+    fontSize: 12,
     color: '#ed0c2a'
   }
 });
