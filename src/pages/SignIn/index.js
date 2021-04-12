@@ -17,6 +17,7 @@ import { AuthContext } from '../../components/AuthContext';
 // import Users from '../../models/Users';
 
 const SignIn = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState({
     email: '',
     username: '',
@@ -76,6 +77,7 @@ const SignIn = ({ navigation }) => {
   };
 
   const loginHandle = async () => {
+    setLoading(true);
     const dataLogin = {
       user: {
         email: data.email,
@@ -94,6 +96,7 @@ const SignIn = ({ navigation }) => {
         .then((response) => response.json())
         .then((json) => {
           // console.log(json.user);
+          setLoading(false);
           if (json.errors) {
             Alert.alert('Wrong Input!', 'Username or Password field cannot be empty', [
               { text: 'Ok' }
@@ -213,7 +216,7 @@ const SignIn = ({ navigation }) => {
       }
       <TouchableOpacity onPress={() => { loginHandle() }}>
         <View style={styles.button}>
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>{loading ? 'loading...' : 'Sign In'}</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
