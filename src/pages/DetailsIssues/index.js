@@ -8,7 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
-import { IconAddBlue, IconBack2 } from '../../assets';
+import { IconBack2 } from '../../assets';
 import { DetailIssue, HeaderMenu } from '../../components';
 
 const DetailsIssues = ({ route, navigation }) => {
@@ -68,8 +68,6 @@ const DetailsIssues = ({ route, navigation }) => {
       <HeaderMenu
         leftButton={<IconBack2 />}
         leftButtonNav={() => navigation.goBack()}
-        rightButton={<IconAddBlue />}
-        rightButtonNav="Home"
       />
       <ScrollView style={styles.container}>
         <Text style={styles.title}>Detail Issues</Text>
@@ -86,36 +84,49 @@ const DetailsIssues = ({ route, navigation }) => {
           <DetailIssue label="Status" value={status} />
           <DetailIssue label="Created at" value={createdAt} />
         </View>
-        <View style={{marginTop: 20}}>
-          <Text style={{fontSize: 14, fontWeight: 'bold', marginBottom: 10}}>Comments</Text>
-          <View style={{flexDirection: 'row', height: 45, backgroundColor: 'rgba(255, 172, 76, 0.4)', paddingHorizontal: 20, alignItems: 'center', justifyContent: 'space-between'}}>
-            <View style={{width: ScreenWidth*0.25}}>
-              <Text style={{fontSize: 11, color: '#4D4D4D'}}>PERSON</Text>
+        <View style={{ marginTop: 20 }}>
+          <Text style={styles.commentTitle}>Comments</Text>
+          <View style={styles.commentHeader}>
+            <View style={{ width: ScreenWidth * 0.25 }}>
+              <Text style={styles.commentHeaderTitle}>PERSON</Text>
             </View>
-            <View style={{width: ScreenWidth*0.53}}>
-              <Text style={{fontSize: 11, color: '#4D4D4D'}}>COMMENTS</Text>
-            </View>
-          </View>
-          <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 8, justifyContent: 'space-between'}}>
-            <View style={{width: ScreenWidth*0.25}}>
-              <Text style={{fontSize: 14, color: '#4D4D4D', fontWeight: 'bold'}}>Admin</Text>
-              <Text style={{fontSize: 9, color: '#4D4D4D'}}>20-08-2020</Text>
-            </View>
-            <View style={{width: ScreenWidth*0.53}}>
-              <Text style={{fontSize: 14, color: '#4D4D4D'}}>Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd jk</Text>
+            <View style={{ width: ScreenWidth * 0.53 }}>
+              <Text style={styles.commentHeaderTitle}>COMMENTS</Text>
             </View>
           </View>
-          <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 8, justifyContent: 'space-between'}}>
-            <View style={{width: ScreenWidth*0.25}}>
-              <Text style={{fontSize: 14, color: '#4D4D4D', fontWeight: 'bold'}}>Admin</Text>
-              <Text style={{fontSize: 9, color: '#4D4D4D'}}>20-08-2020</Text>
+          <View style={styles.commentBody}>
+            <View style={{ width: ScreenWidth * 0.25 }}>
+              <Text style={[styles.commentBodyText, { fontWeight: 'bold' }]}>
+                Admin
+              </Text>
+              <Text style={[styles.commentBodyText, { fontSize: 9 }]}>
+                20-08-2020
+              </Text>
             </View>
-            <View style={{width: ScreenWidth*0.53}}>
-              <Text style={{fontSize: 14, color: '#4D4D4D'}}>Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd jk</Text>
+            <View style={{ width: ScreenWidth * 0.53 }}>
+              <Text style={styles.commentBodyText}>
+                Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd
+                jk
+              </Text>
+            </View>
+          </View>
+          <View style={styles.commentBody}>
+            <View style={{ width: ScreenWidth * 0.25 }}>
+              <Text style={[styles.commentBodyText, { fontWeight: 'bold' }]}>
+                IT Support
+              </Text>
+              <Text style={[styles.commentBodyText, { fontSize: 9 }]}>
+                20-08-2020
+              </Text>
+            </View>
+            <View style={{ width: ScreenWidth * 0.53 }}>
+              <Text style={styles.commentBodyText}>
+                Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd
+              </Text>
             </View>
           </View>
         </View>
-        <View style={{height: 50}}></View>
+        <View style={{ height: 50 }}></View>
       </ScrollView>
     </>
   );
@@ -149,5 +160,32 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     marginTop: 10,
     marginBottom: 18,
+  },
+  commentTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  commentHeader: {
+    flexDirection: 'row',
+    height: 45,
+    backgroundColor: 'rgba(255, 172, 76, 0.4)',
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  commentHeaderTitle: {
+    fontSize: 11,
+    color: '#4D4D4D',
+  },
+  commentBody: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    justifyContent: 'space-between',
+  },
+  commentBodyText: {
+    fontSize: 14,
+    color: '#4D4D4D',
   },
 });

@@ -20,13 +20,13 @@ const HeaderMenu = (props) => {
             {/* <IconMenu2 /> */}
           </TouchableOpacity>
           <Image style={styles.logo} source={LogoWhite} />
-          <TouchableOpacity onPress={() => navigation.navigate(props.rightButtonNav || 'AddIssues')}>
+          <TouchableOpacity onPress={props.rightButtonNav || (() => navigation.navigate('AddIssues'))}>
             {props.rightButton || <IconAdd />}
           </TouchableOpacity>
         </View>
       </View>
       <View style={styles.roundShape}></View>
-      <View style={{ marginBottom: -28 }}></View>
+      <View style={{ marginBottom: -30 }}></View>
     </>
   );
 };

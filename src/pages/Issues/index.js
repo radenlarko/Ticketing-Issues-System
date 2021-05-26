@@ -11,9 +11,10 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import { HeaderMenu } from '../../components';
+import { HeaderMenu, MyButton } from '../../components';
 import { AuthContext } from '../../components/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import { IconAssigned, IconClose2, IconNew, IconResolved } from '../../assets';
 
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -70,16 +71,16 @@ export default function Issues() {
     return (
       <View style={styles.containerHeaderFlat}>
         <Text style={styles.title}>Issues</Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <TextInput
             placeholder="search issues here ..."
             style={styles.searchInput}
           />
-          <TouchableOpacity style={styles.buttonContainer} onPress={() => {}}>
-            <View style={styles.button}>
-              <Text style={styles.textButton}>Search</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={{marginLeft: -30}}>
+            <MyButton 
+              label="Search"
+            />
+          </View>
         </View>
         <View style={styles.radioContainer}>
           <TouchableOpacity onPress={() => {}}>
@@ -124,7 +125,14 @@ export default function Issues() {
                 styles.flatListShape,
                 { backgroundColor: statusBackground },
               ]}>
-              <Text style={{ color: 'white', fontSize: 24 }}>
+              {item.statuses_id == 1
+                ? <IconNew />
+                : item.statuses_id == 2
+                ? <IconAssigned />
+                : item.statuses_id == 3
+                ? <IconResolved />
+                : <IconClose2 />}
+              {/* <Text style={{ color: 'white', fontSize: 24 }}>
                 {item.statuses_id == 1
                   ? 'N'
                   : item.statuses_id == 2
@@ -132,7 +140,7 @@ export default function Issues() {
                   : item.statuses_id == 3
                   ? 'R'
                   : 'C'}
-              </Text>
+              </Text> */}
             </View>
             <View style={{ width: ScreenWidth * 0.52 }}>
               <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
@@ -170,6 +178,19 @@ export default function Issues() {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderMenu />
+      {data.length === 0 ?
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30}}>
+        <Text style={{fontSize: 18, color: '#4D4D4D', textAlign: 'center'}}>The issues are not there yet, add the issue?</Text>
+        <TouchableOpacity
+            style={{ flexDirection: 'row', justifyContent: 'center' }}
+            onPress={() => navigation.navigate('AddIssues')
+            }>
+            <View style={styles.button}>
+              <Text style={styles.textButton}>Add Issue</Text>
+            </View>
+          </TouchableOpacity>
+      </View>
+      :
       <FlatList
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={styles.containerFlat}
@@ -180,7 +201,7 @@ export default function Issues() {
         renderItem={renderItem}
         keyExtractor={(item) => item.slug}
         ListFooterComponent={ListFooterComponent}
-      />
+      /> }
     </SafeAreaView>
   );
 }
@@ -225,23 +246,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginLeft: -30,
-  },
-  button: {
-    backgroundColor: '#FFAC4C',
-    width: 118,
-    height: 26,
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginTop: ScreenHeight * 0.014,
-  },
-  textButton: {
-    color: '#055F9D',
-    textAlign: 'center',
   },
   searchInput: {
     backgroundColor: 'white',

@@ -16,6 +16,7 @@ import Icons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from '../../components/AuthContext';
 import { BgHomeHeader, IconClose, IconOpen, LogoWhite } from '../../assets';
+import { MyButton } from '../../components';
 
 const Home = ({ navigation }) => {
   const authContext = useContext(AuthContext);
@@ -32,15 +33,12 @@ const Home = ({ navigation }) => {
           </Text>
           <View style={{ marginTop: ScreenHeight * 0.016 }}></View>
           <Text style={styles.textH1}>Is there an issue?</Text>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', justifyContent: 'center' }}
-            onPress={() =>
-              navigation.navigate('Issues', { screen: 'AddIssues' })
-            }>
-            <View style={styles.button}>
-              <Text style={styles.textButton}>Add Issue</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={{alignItems: 'center', marginTop: ScreenHeight * 0.014,}}>
+            <MyButton 
+              navigasi={() => navigation.navigate('Issues', { screen: 'AddIssues' })}
+              label="Add Issue"
+            />
+          </View>
         </View>
         <View style={styles.main}>
           <Text style={styles.title}>Issues Status</Text>
@@ -69,18 +67,16 @@ const Home = ({ navigation }) => {
             </View>
           </View>
           <Text style={styles.title}>Search Issues</Text>
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput
               placeholder="search issues here ..."
               style={styles.searchInput}
             />
-            <TouchableOpacity
-              style={{ flexDirection: 'row', justifyContent: 'center', marginLeft: -30 }}
-              onPress={() => {}}>
-              <View style={styles.button}>
-                <Text style={styles.textButton}>Search</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={{marginLeft: -30}}>
+              <MyButton 
+                label="Search"
+              />
+            </View>
           </View>
         </View>
         <View style={styles.latestIssues}>
@@ -132,18 +128,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 32,
     color: '#FFAC4C',
-  },
-  button: {
-    backgroundColor: '#FFAC4C',
-    width: 118,
-    height: 26,
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginTop: ScreenHeight * 0.014,
-  },
-  textButton: {
-    color: '#055F9D',
-    textAlign: 'center',
   },
   logo: {
     width: 112,
