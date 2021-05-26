@@ -87,10 +87,6 @@ const SignIn = ({ navigation }) => {
     try {
       const user = await signIn(data.email, data.password);
 
-      Alert.alert('Login success!', `Welcome back ${user.email}`, [
-        { text: 'Ok' },
-      ]);
-
       return Promise.resolve(user);
     } catch (error) {
       if (error.data === null) {
@@ -153,6 +149,7 @@ const SignIn = ({ navigation }) => {
           autoCapitalize="none"
           onChangeText={(value) => textInputChange(value)}
           onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
+          keyboardType= 'email-address'
         />
         {data.check_textInputChange ? (
           <Feather name="check-circle" color="#24e35e" size={16} />

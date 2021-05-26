@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,9 +13,12 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
+import { AuthContext } from '../../components/AuthContext';
 
-const SignUp = ({navigation}) => {
+const SignUp = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const { signUp } = useContext(AuthContext);
+
   const [data, setData] = useState({
     username: '',
     email: '',
@@ -115,53 +118,40 @@ const SignUp = ({navigation}) => {
 
   const registerHandle = async () => {
     setLoading(true);
-    const dataRegister = {
-      user: {
-        username: data.username,
-        email: data.email,
-        password: data.confirm_pass,
-      },
-    };
-    if(data.password === data.confirm_pass){
-      try {
-        await fetch('http://localhost:8000/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
-          body: JSON.stringify(dataRegister)
-        })
-        .then((response) => response.json())
-        .then((json) => {
-          setLoading(false);
-          if(json.user){
-            console.log('berhasil daftar ', json.user.email)
-            Alert.alert('Berhasil!', `Berhasil daftar ${json.user.email}`, [
-              { text: 'Ok' }
-            ]);
-            navigation.navigate('SignIn')
-          }else if(json.errors){
-            console.log('Form tidak boleh kosong!!')
-            Alert.alert('Error!', 'Form tidak boleh kosong!!', [
-              { text: 'Ok' }
-            ]);
-          }else{
-            console.log('Gagal Register!!')
-            Alert.alert('Error!', 'Gagal Register!!', [
-              { text: 'Ok' }
-            ]);
-          }
-        })
-      } catch (error) {
-        console.log(error);
-      }
-    }else{
+    if (!data.username || !data.email || !data.password || !data.confirm_pass) {
+      Alert.alert('Wrong Input!', 'Field cannot be empty', [{ text: 'Ok' }]);
+
       setLoading(false);
-      Alert.alert('Error!', 'Registration failed!!', [
-        { text: 'Ok' }
+      return null;
+    }
+
+    if (data.password !== data.confirm_pass) {
+      Alert.alert('Wrong Input!', 'Password does not match', [{ text: 'Ok' }]);
+
+      setLoading(false);
+      return null;
+    }
+
+    try {
+      const register = await signUp(
+        data.username,
+        data.email,
+        data.confirm_pass,
+      );
+      Alert.alert('Berhasil!', `Berhasil daftar akun ${data.email}`, [
+        { text: 'Ok' },
       ]);
-      console.log('Password tidak sama!!')
+      navigation.navigate('SignIn');
+      return Promise.resolve(register);
+    } catch (error) {
+      if (error.error) {
+        console.log('Form tidak boleh kosong!!');
+        Alert.alert('Error!', 'Field cannot be empty!!', [{ text: 'Ok' }]);
+      } else {
+        console.log('Gagal Register!!');
+        Alert.alert('Error!', 'Registration failed!!', [{ text: 'Ok' }]);
+      }
+      setLoading(false);
     }
   };
 
@@ -259,6 +249,7 @@ const SignUp = ({navigation}) => {
           autoCapitalize="none"
           onChangeText={(value) => emailInputChange(value)}
           onEndEditing={(e) => handleValidEmail(e.nativeEvent.text)}
+          keyboardType="email-address"
         />
         {data.check_emailInputChange ? (
           <Feather name="check-circle" color="#24e35e" size={16} />
@@ -319,17 +310,19 @@ const SignUp = ({navigation}) => {
           </Text>
         </View>
       )}
-      <TouchableOpacity onPress={() => registerHandle()}>
+      <TouchableOpacity onPress={registerHandle}>
         <View style={styles.button}>
-          <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Sign Up'}</Text>
+          <Text style={styles.buttonText}>
+            {loading ? 'Loading...' : 'Sign Up'}
+          </Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <View style={[styles.button, {backgroundColor: 'grey'}]}>
+        <View style={[styles.button, { backgroundColor: 'grey' }]}>
           <Text style={styles.buttonText}>Sign In</Text>
         </View>
       </TouchableOpacity>
-      <View style={{marginVertical: 20}}></View>
+      <View style={{ marginVertical: 20 }}></View>
     </ScrollView>
   );
 };
