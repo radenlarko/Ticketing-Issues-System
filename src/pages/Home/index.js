@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,22 +11,35 @@ import {
   Image,
   Alert,
   TextInput,
+  FlatList,
 } from 'react-native';
 import Icons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from '../../components/AuthContext';
-import { BgHomeHeader, IconClose, IconOpen, LogoWhite } from '../../assets';
+import { useNavigation } from '@react-navigation/native';
+import {
+  BgHomeHeader,
+  BgHomeHeaderSmall,
+  IconAssigned,
+  IconClose,
+  IconClose2,
+  IconNew,
+  IconOpen,
+  IconResolved,
+  LogoWhite,
+} from '../../assets';
 import { MyButton } from '../../components';
 
-const Home = ({ navigation }) => {
+const Home = () => {
+  const navigation = useNavigation();
   const authContext = useContext(AuthContext);
-  const { getData } = useContext(AuthContext);
+  const { getData, searchData } = useContext(AuthContext);
   const dataIssues = authContext.dataApi;
 
   const newData =
     dataIssues == undefined
       ? []
-      : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1));
+      : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1)).slice(0, 5);
 
   const getDataToStore = async () => {
     try {
@@ -46,12 +59,18 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getDataToStore();
-  }, [])
+  }, []);
 
-  return (
-    <ImageBackground source={BgHomeHeader} style={{ flex: 1 }}>
-      <ScrollView>
-        <View style={styles.header}>
+  const ListHeaderComponent = () => {
+    const [search, setSearch] = useState('');
+
+    searchHandle = () => {
+      searchData(search);
+      navigation.navigate('Issues');
+    }
+    return (
+      <>
+        <ImageBackground source={BgHomeHeaderSmall} style={{ flex: 1 }} style={styles.header}>
           <View style={{ marginTop: ScreenHeight * 0.03 }}></View>
           <Image style={styles.logo} source={LogoWhite} />
           <View style={{ marginTop: ScreenHeight * 0.044 }}></View>
@@ -70,7 +89,7 @@ const Home = ({ navigation }) => {
               label="Add Issue"
             />
           </View>
-        </View>
+        </ImageBackground>
         <View style={styles.main}>
           <Text style={styles.title}>Issues Status</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -102,18 +121,98 @@ const Home = ({ navigation }) => {
             <TextInput
               placeholder="search issues here ..."
               style={styles.searchInput}
+              value={search}
+              onChangeText={(value) => setSearch(value)}
             />
             <View style={{ marginLeft: -30 }}>
-              <MyButton label="Search" />
+              <MyButton label="Search" navigasi={searchHandle} />
             </View>
           </View>
         </View>
         <View style={styles.latestIssues}>
           <Text style={styles.title}>Latest Issues</Text>
-          {newData.length == 0 ? (<Text>no issues</Text>) : (<Text> issues {newData.length}</Text>)}
+          {newData.length == 0 ? <View style={{marginBottom: 50}}><Text>no issues</Text></View> : null}
         </View>
-      </ScrollView>
-    </ImageBackground>
+      </>
+    );
+  };
+
+  const renderItem = ({ item }) => {
+    // const ScreenWidth = Dimensions.get('window').width;
+    let statusBackground;
+    if (item.statuses_id == 1) {
+      statusBackground = '#00758f';
+    } else if (item.statuses_id == 2) {
+      statusBackground = '#fa7935';
+    } else if (item.statuses_id == 3) {
+      statusBackground = '#55c6aa';
+    } else {
+      statusBackground = 'grey';
+    }
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate('Issues', { screen: 'DetailsIssues', params: { item: item }})}>
+        <View style={styles.flatListContainer}>
+          <View style={styles.flatListContent}>
+            <View
+              style={[
+                styles.flatListShape,
+                { backgroundColor: statusBackground },
+              ]}>
+              {item.statuses_id == 1 ? (
+                <IconNew />
+              ) : item.statuses_id == 2 ? (
+                <IconAssigned />
+              ) : item.statuses_id == 3 ? (
+                <IconResolved />
+              ) : (
+                <IconClose2 />
+              )}
+            </View>
+            <View style={{ width: ScreenWidth * 0.52 }}>
+              <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+              <Text style={{ lineHeight: 24 }}>
+                {item.categories_id == 1
+                  ? 'Documentation'
+                  : item.categories_id == 2
+                  ? 'Hardware Problem'
+                  : item.categories_id == 3
+                  ? 'Network Problem'
+                  : item.categories_id == 4
+                  ? 'Question'
+                  : item.categories_id == 5
+                  ? 'Software Problem'
+                  : 'Uncategorized'}
+              </Text>
+            </View>
+            <View>
+              <Text style={{ fontWeight: 'bold', fontSize: 12 }}>
+                20-08-2021
+              </Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const ListFooterComponent = () => {
+    return (
+      <View style={{backgroundColor: '#fafafa', height: ScreenHeight*0.08}}></View>
+    );
+  };
+
+  return (
+    <View>
+      <FlatList
+        ListHeaderComponent={ListHeaderComponent}
+        contentContainerStyle={styles.containerFlat}
+        data={newData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.slug}
+        ListFooterComponent={ListFooterComponent}
+      />
+    </View>
   );
 };
 
@@ -133,17 +232,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#E9E9E9',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    marginTop: -20,
+    marginTop: -30,
     padding: ScreenWidth * 0.05,
   },
   latestIssues: {
-    minHeight: ScreenHeight * 0.4,
     backgroundColor: '#fafafa',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
     marginTop: -30,
     paddingHorizontal: ScreenWidth * 0.05,
-    paddingBottom: 30,
   },
   text: {
     textAlign: 'center',
@@ -210,6 +307,28 @@ const styles = StyleSheet.create({
     marginRight: 5,
     padding: 8,
     paddingRight: 30,
+  },
+  containerFlat: {
+    backgroundColor: '#fafafa',
+  },
+  flatListContainer: {
+    backgroundColor: 'white',
+    marginHorizontal: 20,
+    marginVertical: 5,
+    padding: 10,
+    borderRadius: 20,
+  },
+  flatListContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flatListShape: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

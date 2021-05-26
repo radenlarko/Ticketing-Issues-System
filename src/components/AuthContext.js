@@ -9,10 +9,12 @@ const initialLoginState = {
   userEmail: null,
   userToken: null,
   dataApi: [],
+  dataSearch: '',
   signIn: () => null,
   signOut: () => null,
   signUp: () => null,
   getData: () => null,
+  searchData: () => null,
 };
 
 export const AuthContext = createContext(initialLoginState);
@@ -57,7 +59,13 @@ const loginReducer = (prevState, action) => {
         ...prevState,
         dataApi: action.data,
         isLoading: false,
-      }
+      };
+    case 'SEARCHDATA':
+      return {
+        ...prevState,
+        dataSearch: action.search,
+        isLoading: false,
+      };
   }
 };
 
@@ -191,13 +199,13 @@ const AuthProvider = ({ children }) => {
       return Promise.resolve(data);
     } catch (error) {
       console.log(error);
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
   };
 
   const endpoint = 'http://127.0.0.1:8000/api';
   const getData = async (token) => {
-    try{
+    try {
       let response = await fetch(`${endpoint}/ticket/ticketuser`, {
         method: 'GET',
         headers: {
@@ -217,6 +225,16 @@ const AuthProvider = ({ children }) => {
       dispatch({ type: 'GETDATA', data: data.tickets });
 
       return Promise.resolve(data.tickets);
+    } catch (error) {
+      console.log(error);
+      return Promise.reject(error);
+    }
+  };
+
+  const searchData = (search) => {
+    try{
+      dispatch({ type: 'SEARCHDATA', search: search });
+      return Promise.resolve(search)
     } catch(error) {
       console.log(error);
       return Promise.reject(error);
@@ -224,7 +242,8 @@ const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp, getData }}>
+    <AuthContext.Provider
+      value={{ ...state, signIn, signOut, signUp, getData, searchData }}>
       {children}
     </AuthContext.Provider>
   );

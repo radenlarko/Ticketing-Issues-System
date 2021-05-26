@@ -30,12 +30,19 @@ export default function Issues() {
     wait(1500).then(() => setRefreshing(false));
   }, []);
 
+  const { searchData } = useContext(AuthContext);
   const authContext = useContext(AuthContext);
   const dataIssues = authContext.dataApi;
 
-  const newData = dataIssues == undefined ? [] : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1));
+  const newData =
+    dataIssues == undefined
+      ? []
+      : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1));
 
   const ListHeaderComponent = () => {
+    const [search, setSearch] = useState('' || authContext.dataSearch);
+    console.log(search);
+
     return (
       <View style={styles.containerHeaderFlat}>
         <Text style={styles.title}>Issues</Text>
@@ -43,12 +50,17 @@ export default function Issues() {
           <TextInput
             placeholder="search issues here ..."
             style={styles.searchInput}
+            value={search}
+            onChangeText={(value) => setSearch(value)}
           />
-          <View style={{marginLeft: -30}}>
-            <MyButton 
-              label="Search"
-            />
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              setSearch('');
+              searchData('');
+            }}
+            style={{ marginLeft: -50 }}>
+            <Text style={{ color: 'grey', fontSize: 11 }}>clear</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
           <TouchableOpacity onPress={() => {}}>
@@ -93,13 +105,15 @@ export default function Issues() {
                 styles.flatListShape,
                 { backgroundColor: statusBackground },
               ]}>
-              {item.statuses_id == 1
-                ? <IconNew />
-                : item.statuses_id == 2
-                ? <IconAssigned />
-                : item.statuses_id == 3
-                ? <IconResolved />
-                : <IconClose2 />}
+              {item.statuses_id == 1 ? (
+                <IconNew />
+              ) : item.statuses_id == 2 ? (
+                <IconAssigned />
+              ) : item.statuses_id == 3 ? (
+                <IconResolved />
+              ) : (
+                <IconClose2 />
+              )}
             </View>
             <View style={{ width: ScreenWidth * 0.52 }}>
               <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
@@ -137,26 +151,35 @@ export default function Issues() {
   return (
     <SafeAreaView style={styles.container}>
       <HeaderMenu />
-      {newData.length === 0 ?
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30}}>
-        <Text style={{fontSize: 18, color: '#4D4D4D', textAlign: 'center'}}>The issues are not there yet, add the issue?</Text>
-        <Button 
-          label="Add Issue"
-          navigasi={() => navigation.navigate('AddIssues')}
+      {newData.length === 0 ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 30,
+          }}>
+          <Text style={{ fontSize: 18, color: '#4D4D4D', textAlign: 'center' }}>
+            The issues are not there yet, add the issue?
+          </Text>
+          <Button
+            label="Add Issue"
+            navigasi={() => navigation.navigate('AddIssues')}
+          />
+        </View>
+      ) : (
+        <FlatList
+          ListHeaderComponent={ListHeaderComponent}
+          contentContainerStyle={styles.containerFlat}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          data={newData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.slug}
+          ListFooterComponent={ListFooterComponent}
         />
-      </View>
-      :
-      <FlatList
-        ListHeaderComponent={ListHeaderComponent}
-        contentContainerStyle={styles.containerFlat}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        data={newData}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.slug}
-        ListFooterComponent={ListFooterComponent}
-      /> }
+      )}
     </SafeAreaView>
   );
 }
@@ -184,11 +207,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   flatListContainer: {
+    backgroundColor: 'white',
     marginHorizontal: 20,
     marginVertical: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 5,
+    padding: 10,
+    borderRadius: 20,
   },
   flatListContent: {
     flexDirection: 'row',
@@ -196,20 +219,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   flatListShape: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
   },
   searchInput: {
+    width: ScreenWidth * 0.89,
     backgroundColor: 'white',
     borderRadius: 8,
-    width: 250,
     height: 40,
     marginRight: 5,
     padding: 8,
-    paddingRight: 30,
+    paddingRight: 50,
   },
   radioContainer: {
     flexDirection: 'row',
@@ -247,7 +270,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
 
 // import React, { useState, useEffect, useCallback, useContext } from 'react';
 // import {
@@ -332,7 +354,7 @@ const styles = StyleSheet.create({
 //             style={styles.searchInput}
 //           />
 //           <View style={{marginLeft: -30}}>
-//             <MyButton 
+//             <MyButton
 //               label="Search"
 //             />
 //           </View>
@@ -427,7 +449,7 @@ const styles = StyleSheet.create({
 //       {data.length === 0 ?
 //       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30}}>
 //         <Text style={{fontSize: 18, color: '#4D4D4D', textAlign: 'center'}}>The issues are not there yet, add the issue?</Text>
-//         <Button 
+//         <Button
 //           label="Add Issue"
 //           navigasi={() => navigation.navigate('AddIssues')}
 //         />

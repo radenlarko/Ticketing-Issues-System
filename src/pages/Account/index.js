@@ -98,6 +98,7 @@ export default function Account() {
             <View style={{flexDirection: 'row', justifyContent: 'flex-end', marginVertical: 20}}>
               <MyButton 
                 label="Submit"
+                navigasi={() => Alert.alert('Coming Soon!', 'Change password feature is coming soon!')}
               />
             </View>
           </View>
