@@ -29,6 +29,7 @@ const AddIssues = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const authContext = useContext(AuthContext);
+  const { getData } = useContext(AuthContext);
 
   const handleValidTitle = (value) => {
     if(value.trim().length >= 10){
@@ -108,6 +109,7 @@ const AddIssues = ({ navigation }) => {
       })
 
       const data = await request.json();
+      await getData(authContext.userToken)
       setLoading(false);
       console.log('Berhasil Post: ', data.ticket.title);
       setTitle('');

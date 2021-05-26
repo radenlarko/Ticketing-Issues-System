@@ -10,6 +10,7 @@ import {
   Dimensions,
   Platform,
   TextInput,
+  Alert,
 } from 'react-native';
 import { IconLogout } from '../../assets';
 import { HeaderMenu, MyButton } from '../../components';
@@ -34,7 +35,7 @@ export default function Account() {
         console.log(error.code + ' ' + error.message);
         Alert.alert(String(error.code), error.message, [{ text: 'Ok' }]);
       } else {
-        Alert.alert('Error!', 'gagal logout dari Server', [{ text: 'Ok' }]);
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [{ text: 'Ok' }]);
       }
     }
   };

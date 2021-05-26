@@ -33,7 +33,7 @@ const DrawerContent = (props) => {
         console.log(error.code + ' ' + error.message);
         Alert.alert(String(error.code), error.message, [{ text: 'Ok' }]);
       } else {
-        Alert.alert('Error!', 'gagal logout dari Server', [{ text: 'Ok' }]);
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [{ text: 'Ok' }]);
       }
     }
   };

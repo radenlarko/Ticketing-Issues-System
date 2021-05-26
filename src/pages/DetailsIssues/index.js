@@ -105,8 +105,7 @@ const DetailsIssues = ({ route, navigation }) => {
             </View>
             <View style={{ width: ScreenWidth * 0.53 }}>
               <Text style={styles.commentBodyText}>
-                Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd
-                jk
+                Sedang dalam proses pengecekan
               </Text>
             </View>
           </View>
@@ -121,7 +120,7 @@ const DetailsIssues = ({ route, navigation }) => {
             </View>
             <View style={{ width: ScreenWidth * 0.53 }}>
               <Text style={styles.commentBodyText}>
-                Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd
+                Done.
               </Text>
             </View>
           </View>

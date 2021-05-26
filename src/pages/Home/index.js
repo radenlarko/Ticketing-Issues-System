@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -20,6 +20,34 @@ import { MyButton } from '../../components';
 
 const Home = ({ navigation }) => {
   const authContext = useContext(AuthContext);
+  const { getData } = useContext(AuthContext);
+  const dataIssues = authContext.dataApi;
+
+  const newData =
+    dataIssues == undefined
+      ? []
+      : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1));
+
+  const getDataToStore = async () => {
+    try {
+      const dataStore = await getData(authContext.userToken);
+
+      return Promise.resolve(dataStore);
+    } catch (error) {
+      if (error.errors) {
+        Alert.alert('Error!', 'JWT error: Token has expired');
+      } else {
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+          { text: 'Ok' },
+        ]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getDataToStore();
+  }, [])
+
   return (
     <ImageBackground source={BgHomeHeader} style={{ flex: 1 }}>
       <ScrollView>
@@ -33,9 +61,12 @@ const Home = ({ navigation }) => {
           </Text>
           <View style={{ marginTop: ScreenHeight * 0.016 }}></View>
           <Text style={styles.textH1}>Is there an issue?</Text>
-          <View style={{alignItems: 'center', marginTop: ScreenHeight * 0.014,}}>
-            <MyButton 
-              navigasi={() => navigation.navigate('Issues', { screen: 'AddIssues' })}
+          <View
+            style={{ alignItems: 'center', marginTop: ScreenHeight * 0.014 }}>
+            <MyButton
+              navigasi={() =>
+                navigation.navigate('Issues', { screen: 'AddIssues' })
+              }
               label="Add Issue"
             />
           </View>
@@ -72,15 +103,14 @@ const Home = ({ navigation }) => {
               placeholder="search issues here ..."
               style={styles.searchInput}
             />
-            <View style={{marginLeft: -30}}>
-              <MyButton 
-                label="Search"
-              />
+            <View style={{ marginLeft: -30 }}>
+              <MyButton label="Search" />
             </View>
           </View>
         </View>
         <View style={styles.latestIssues}>
           <Text style={styles.title}>Latest Issues</Text>
+          {newData.length == 0 ? (<Text>no issues</Text>) : (<Text> issues {newData.length}</Text>)}
         </View>
       </ScrollView>
     </ImageBackground>
@@ -107,7 +137,7 @@ const styles = StyleSheet.create({
     padding: ScreenWidth * 0.05,
   },
   latestIssues: {
-    minHeight: ScreenHeight*0.4,
+    minHeight: ScreenHeight * 0.4,
     backgroundColor: '#fafafa',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -180,7 +210,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
     padding: 8,
     paddingRight: 30,
-  }
+  },
 });
 
 // ------------- old home -------------------

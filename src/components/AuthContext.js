@@ -8,9 +8,11 @@ const initialLoginState = {
   userName: null,
   userEmail: null,
   userToken: null,
+  dataApi: [],
   signIn: () => null,
   signOut: () => null,
   signUp: () => null,
+  getData: () => null,
 };
 
 export const AuthContext = createContext(initialLoginState);
@@ -36,6 +38,7 @@ const loginReducer = (prevState, action) => {
     case 'LOGOUT':
       return {
         ...prevState,
+        dataApi: [],
         userName: null,
         userEmail: null,
         userToken: null,
@@ -49,6 +52,12 @@ const loginReducer = (prevState, action) => {
         userToken: action.token,
         isLoading: false,
       };
+    case 'GETDATA':
+      return {
+        ...prevState,
+        dataApi: action.data,
+        isLoading: false,
+      }
   }
 };
 
@@ -111,9 +120,9 @@ const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('userName', username);
       await AsyncStorage.setItem('userEmail', email);
 
-      Alert.alert('Login success!', `Welcome back ${username}`, [
-        { text: 'Ok' },
-      ]);
+      // Alert.alert('Login success!', `Welcome back ${username}`, [
+      //   { text: 'Ok' },
+      // ]);
 
       return Promise.resolve(data.user);
     } catch (error) {
@@ -186,8 +195,36 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const endpoint = 'http://127.0.0.1:8000/api';
+  const getData = async (token) => {
+    try{
+      let response = await fetch(`${endpoint}/ticket/ticketuser`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          Authorization: `token ${token}`,
+        },
+      });
+      const data = await response.json();
+      // console.log('data store: ', data.tickets);
+
+      if (data.errors) {
+        return Promise.reject(data);
+      }
+
+      dispatch({ type: 'GETDATA', data: data.tickets });
+
+      return Promise.resolve(data.tickets);
+    } catch(error) {
+      console.log(error);
+      return Promise.reject(error);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp }}>
+    <AuthContext.Provider value={{ ...state, signIn, signOut, signUp, getData }}>
       {children}
     </AuthContext.Provider>
   );
