@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { AuthContext } from '../../components/AuthContext';
+import { HeaderMenu } from '../../components';
+import { IconAddBlue, IconBack2 } from '../../assets';
 
 const AddIssues = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -26,10 +28,10 @@ const AddIssues = ({ navigation }) => {
   const endpoint = 'http://127.0.0.1:8000/api';
   const saveData = async () => {
     if (!title || !description || !assign_to || !category || !priority) {
-        Alert.alert('Wrong Input!', 'Field cannot be empty!!', [{ text: 'Ok' }]);
-        setLoading(false);
+      Alert.alert('Wrong Input!', 'Field cannot be empty!!', [{ text: 'Ok' }]);
+      setLoading(false);
 
-        return null;
+      return null;
     }
 
     let newToken = await authContext.userToken;
@@ -67,78 +69,98 @@ const AddIssues = ({ navigation }) => {
           navigation.navigate('Issues');
         });
     } catch (error) {
-        Alert.alert('Error!', String(error), [{ text: 'Ok' }]);
-        setLoading(false);
-        console.log(error);
+      Alert.alert('Error!', String(error), [{ text: 'Ok' }]);
+      setLoading(false);
+      console.log(error);
     }
     console.log('AddIssues Token: ', newToken);
   };
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>ADD ISSUES</Text>
-      <TextInput
-        placeholder={'enter title'}
-        value={title}
-        onChangeText={(value) => setTitle(value)}
-        style={styles.textInput}
-        maxLength={30}
+    <>
+      <HeaderMenu 
+        leftButton = {<IconBack2 />}
+        leftButtonNav = {() => navigation.goBack()}
+        rightButton = {<IconAddBlue />}
+        rightButtonNav = 'Home'
       />
-      <TextInput
-        placeholder={'enter description'}
-        value={description}
-        onChangeText={(value) => setDescription(value)}
-        style={[styles.textInput, {height: 80, textAlignVertical: 'top'}]}
-        multiline
-        numberOfLines={4}
-        maxLength={140}
-      />
-      <Picker
-        selectedValue={assign_to}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setAssign_to(itemValue)}>
-        <Picker.Item label="Select assign to" style={{color: 'grey', fontSize: 14}} value="" />
-        <Picker.Item label="Rian Pambudi" value="1" />
-        <Picker.Item label="admin" value="2" />
-        <Picker.Item label="Yos Sularko" value="3" />
-      </Picker>
-      <View style={styles.line}></View>
-      <Picker
-        selectedValue={category}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
-        <Picker.Item label="Select category" style={{color: 'grey', fontSize: 14}} value="" />
-        <Picker.Item label="Documentation" value="1" />
-        <Picker.Item label="Hardware Problem" value="2" />
-        <Picker.Item label="Network Problem" value="3" />
-        <Picker.Item label="Question" value="4" />
-        <Picker.Item label="Software Problem" value="5" />
-      </Picker>
-      <View style={styles.line}></View>
-      <Picker
-        selectedValue={priority}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}>
-        <Picker.Item label="Select priority" style={{color: 'grey', fontSize: 14}} value="" />
-        <Picker.Item label="High" value="1" />
-        <Picker.Item label="Medium" value="2" />
-        <Picker.Item label="Low" value="3" />
-      </Picker>
-      <View style={[styles.line, {marginBottom: 10}]}></View>
-      <TouchableOpacity onPress={saveData}>
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>
-            {loading ? 'Saving...' : 'Save'}
-          </Text>
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Add Issues</Text>
+        <TextInput
+          placeholder={'enter title'}
+          value={title}
+          onChangeText={(value) => setTitle(value)}
+          style={styles.textInput}
+          maxLength={30}
+        />
+        <TextInput
+          placeholder={'enter description'}
+          value={description}
+          onChangeText={(value) => setDescription(value)}
+          style={[styles.textInput, { height: 80, textAlignVertical: 'top' }]}
+          multiline
+          numberOfLines={4}
+          maxLength={140}
+        />
+        <Picker
+          selectedValue={assign_to}
+          style={styles.picker}
+          onValueChange={(itemValue, itemIndex) => setAssign_to(itemValue)}>
+          <Picker.Item
+            label="Select assign to"
+            style={{ color: 'grey', fontSize: 14 }}
+            value=""
+          />
+          <Picker.Item label="Rian Pambudi" value="1" />
+          <Picker.Item label="admin" value="2" />
+          <Picker.Item label="Yos Sularko" value="3" />
+        </Picker>
+        <View style={styles.line}></View>
+        <Picker
+          selectedValue={category}
+          style={styles.picker}
+          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
+          <Picker.Item
+            label="Select category"
+            style={{ color: 'grey', fontSize: 14 }}
+            value=""
+          />
+          <Picker.Item label="Documentation" value="1" />
+          <Picker.Item label="Hardware Problem" value="2" />
+          <Picker.Item label="Network Problem" value="3" />
+          <Picker.Item label="Question" value="4" />
+          <Picker.Item label="Software Problem" value="5" />
+        </Picker>
+        <View style={styles.line}></View>
+        <Picker
+          selectedValue={priority}
+          style={styles.picker}
+          onValueChange={(itemValue, itemIndex) => setPriority(itemValue)}>
+          <Picker.Item
+            label="Select priority"
+            style={{ color: 'grey', fontSize: 14 }}
+            value=""
+          />
+          <Picker.Item label="High" value="1" />
+          <Picker.Item label="Medium" value="2" />
+          <Picker.Item label="Low" value="3" />
+        </Picker>
+        <View style={[styles.line, { marginBottom: 10 }]}></View>
+        <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', marginTop: 20}}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Issues', { screen: 'Issues' })}>
+            <Text style={[styles.textButton, {textDecorationLine: 'underline', marginRight: 30}]}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={saveData}>
+            <View style={styles.button}>
+              <Text style={styles.textButton}>
+                {loading ? 'Loading...' : 'Submit'}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Issues', { screen: 'Issues' })}>
-        <View style={[styles.button, { backgroundColor: 'grey' }]}>
-          <Text style={styles.buttonText}>Back</Text>
-        </View>
-      </TouchableOpacity>
-      <View style={{ marginVertical: 20 }}></View>
-    </ScrollView>
+        <View style={{ marginVertical: 20 }}></View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -152,11 +174,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#055F9D',
-    textAlign: 'center',
     fontWeight: 'bold',
-    marginTop: 60,
-    marginBottom: 20,
+    textAlign: 'center',
+    marginTop: 40,
+    marginBottom: 40,
   },
   textInput: {
     height: 50,
@@ -172,17 +193,18 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   button: {
-    backgroundColor: '#055F9D',
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 5,
+    backgroundColor: '#FFAC4C',
+    width: 118,
+    height: 26,
+    borderRadius: 8,
+    justifyContent: 'center',
   },
-  buttonText: {
-    color: 'white',
+  textButton: {
+    color: '#055F9D',
     textAlign: 'center',
   },
-  line : {
-    borderBottomWidth: 1, 
+  line: {
+    borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
 });

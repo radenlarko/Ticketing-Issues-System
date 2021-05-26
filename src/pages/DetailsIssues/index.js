@@ -1,8 +1,18 @@
 import React from 'react';
-import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Dimensions,
+} from 'react-native';
+import { IconAddBlue, IconBack2 } from '../../assets';
+import { DetailIssue, HeaderMenu } from '../../components';
 
-const DetailsIssues = ({route, navigation}) => {
-  const {item} = route.params;
+const DetailsIssues = ({ route, navigation }) => {
+  const { item } = route.params;
   const title = item.title;
   const description = item.description;
   const assigned_to = item.assigned_to;
@@ -12,62 +22,132 @@ const DetailsIssues = ({route, navigation}) => {
   const createdAt = item.createdAt;
 
   let assigned;
-  if (assigned_to == 1){
-    assigned = 'Rian Pambudi'
-  } else if (assigned_to == 2){
-    assigned = 'Admin'
+  if (assigned_to == 1) {
+    assigned = 'Rian Pambudi';
+  } else if (assigned_to == 2) {
+    assigned = 'Admin';
   } else {
-    assigned = 'Yos Sularko'
+    assigned = 'Yos Sularko';
   }
 
   let category;
-  if (categories_id == 1){
-    category = 'Documentation'
-  } else if (categories_id == 2){
-    category = 'Hardware Problem'
-  } else if (categories_id == 3){
-    category = 'Network Problem'
-  } else if (categories_id == 4){
-    category = 'Question'
+  if (categories_id == 1) {
+    category = 'Documentation';
+  } else if (categories_id == 2) {
+    category = 'Hardware Problem';
+  } else if (categories_id == 3) {
+    category = 'Network Problem';
+  } else if (categories_id == 4) {
+    category = 'Question';
   } else {
-    category = 'Software Problem'
+    category = 'Software Problem';
   }
 
   let priority;
-  if (priorities_id == 1){
-    priority = 'High'
-  } else if (priorities_id == 2){
-    priority = 'Medium'
+  if (priorities_id == 1) {
+    priority = 'High';
+  } else if (priorities_id == 2) {
+    priority = 'Medium';
   } else {
-    priority = 'Low'
+    priority = 'Low';
   }
 
   let status;
-  if (statuses_id == 1){
-    status = 'New'
-  } else if (statuses_id == 2){
-    status = 'Assigned'
-  } else if (statuses_id == 3){
-    status = 'Resolved'
+  if (statuses_id == 1) {
+    status = 'New';
+  } else if (statuses_id == 2) {
+    status = 'Assigned';
+  } else if (statuses_id == 3) {
+    status = 'Resolved';
   } else {
-    status = 'Closed'
+    status = 'Closed';
   }
 
   return (
-    <View>
-      <Text>Titile: {title}</Text>
-      <Text>Description: {description}</Text>
-      <Text>Assigned To: {assigned}</Text>
-      <Text>Category: {category}</Text>
-      <Text>Priority: {priority}</Text>
-      <Text>Status: {status}</Text>
-      <Text>Created at: {createdAt}</Text>
-      <Button title="Back" onPress={() => navigation.goBack()} />
-    </View>
+    <>
+      <HeaderMenu
+        leftButton={<IconBack2 />}
+        leftButtonNav={() => navigation.goBack()}
+        rightButton={<IconAddBlue />}
+        rightButtonNav="Home"
+      />
+      <ScrollView style={styles.container}>
+        <Text style={styles.title}>Detail Issues</Text>
+        <View style={styles.card}>
+          <Text style={styles.titleCard}>{title}</Text>
+          <DetailIssue
+            label="Description"
+            value={description}
+            style={{ fontSize: 14 }}
+          />
+          <DetailIssue label="Assigned to" value={assigned} />
+          <DetailIssue label="Category" value={category} />
+          <DetailIssue label="Priority" value={priority} />
+          <DetailIssue label="Status" value={status} />
+          <DetailIssue label="Created at" value={createdAt} />
+        </View>
+        <View style={{marginTop: 20}}>
+          <Text style={{fontSize: 14, fontWeight: 'bold', marginBottom: 10}}>Comments</Text>
+          <View style={{flexDirection: 'row', height: 45, backgroundColor: 'rgba(255, 172, 76, 0.4)', paddingHorizontal: 20, alignItems: 'center', justifyContent: 'space-between'}}>
+            <View style={{width: ScreenWidth*0.25}}>
+              <Text style={{fontSize: 11, color: '#4D4D4D'}}>PERSON</Text>
+            </View>
+            <View style={{width: ScreenWidth*0.53}}>
+              <Text style={{fontSize: 11, color: '#4D4D4D'}}>COMMENTS</Text>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 8, justifyContent: 'space-between'}}>
+            <View style={{width: ScreenWidth*0.25}}>
+              <Text style={{fontSize: 14, color: '#4D4D4D', fontWeight: 'bold'}}>Admin</Text>
+              <Text style={{fontSize: 9, color: '#4D4D4D'}}>20-08-2020</Text>
+            </View>
+            <View style={{width: ScreenWidth*0.53}}>
+              <Text style={{fontSize: 14, color: '#4D4D4D'}}>Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd jk</Text>
+            </View>
+          </View>
+          <View style={{flexDirection: 'row', paddingHorizontal: 20, paddingVertical: 8, justifyContent: 'space-between'}}>
+            <View style={{width: ScreenWidth*0.25}}>
+              <Text style={{fontSize: 14, color: '#4D4D4D', fontWeight: 'bold'}}>Admin</Text>
+              <Text style={{fontSize: 9, color: '#4D4D4D'}}>20-08-2020</Text>
+            </View>
+            <View style={{width: ScreenWidth*0.53}}>
+              <Text style={{fontSize: 14, color: '#4D4D4D'}}>Adjdd jnjdnjwd wjdnwjdnwjd jdnwjdnwjd jdnwjdnwjd jdnwjndw jndjwd jk</Text>
+            </View>
+          </View>
+        </View>
+        <View style={{height: 50}}></View>
+      </ScrollView>
+    </>
   );
 };
 
-
 export default DetailsIssues;
 
-const styles = StyleSheet.create({});
+let ScreenHeight = Dimensions.get('window').height;
+let ScreenWidth = Dimensions.get('window').width;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 20,
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: ScreenWidth * 0.05,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 40,
+    marginBottom: 40,
+  },
+  titleCard: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    color: '#055F9D',
+    textTransform: 'capitalize',
+    marginTop: 10,
+    marginBottom: 18,
+  },
+});

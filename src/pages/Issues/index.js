@@ -6,19 +6,21 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Image,
-  Button,
   TouchableOpacity,
   Alert,
   Dimensions,
+  TextInput,
 } from 'react-native';
+import { HeaderMenu } from '../../components';
 import { AuthContext } from '../../components/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-export default function Issues({ navigation }) {
+export default function Issues() {
+  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -66,44 +68,73 @@ export default function Issues({ navigation }) {
   // render item FlatList
   const ListHeaderComponent = () => {
     return (
-      <View>
+      <View style={styles.containerHeaderFlat}>
         <Text style={styles.title}>Issues</Text>
-        <Button
-          title="Add Issue"
-          onPress={() => navigation.navigate('AddIssues')}
-        />
+        <View style={{ flexDirection: 'row' }}>
+          <TextInput
+            placeholder="search issues here ..."
+            style={styles.searchInput}
+          />
+          <TouchableOpacity style={styles.buttonContainer} onPress={() => {}}>
+            <View style={styles.button}>
+              <Text style={styles.textButton}>Search</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.radioContainer}>
+          <TouchableOpacity onPress={() => {}}>
+            <View style={styles.radioAll}>
+              <Text style={styles.textRadio}>All</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {}}>
+            <View style={styles.radioOpen}>
+              <Text style={styles.textRadio}>Open</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {}}>
+            <View style={styles.radioClose}>
+              <Text style={styles.textRadio}>Close</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
 
   const renderItem = ({ item }) => {
-    const ScreenWidth = Dimensions.get("window").width;
+    const ScreenWidth = Dimensions.get('window').width;
     let statusBackground;
-    if (item.statuses_id == 1){
-      statusBackground = '#00758f'
-    } else if (item.statuses_id == 2){
-      statusBackground = '#fa7935'
-    } else if (item.statuses_id == 3){
-      statusBackground = '#55c6aa'
+    if (item.statuses_id == 1) {
+      statusBackground = '#00758f';
+    } else if (item.statuses_id == 2) {
+      statusBackground = '#fa7935';
+    } else if (item.statuses_id == 3) {
+      statusBackground = '#55c6aa';
     } else {
-      statusBackground = 'grey'
+      statusBackground = 'grey';
     }
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('DetailsIssues', { item: item })}>
         <View style={styles.flatListContainer}>
           <View style={styles.flatListContent}>
-            <View style={[styles.flatListShape, {backgroundColor: statusBackground}]}>
+            <View
+              style={[
+                styles.flatListShape,
+                { backgroundColor: statusBackground },
+              ]}>
               <Text style={{ color: 'white', fontSize: 24 }}>
-                {item.statuses_id == 1 
+                {item.statuses_id == 1
                   ? 'N'
                   : item.statuses_id == 2
                   ? 'A'
                   : item.statuses_id == 3
-                  ? 'R' : 'C'}
+                  ? 'R'
+                  : 'C'}
               </Text>
             </View>
-            <View style={{width: ScreenWidth*0.52}}>
+            <View style={{ width: ScreenWidth * 0.52 }}>
               <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
               <Text style={{ lineHeight: 24 }}>
                 {item.categories_id == 1
@@ -120,7 +151,9 @@ export default function Issues({ navigation }) {
               </Text>
             </View>
             <View>
-              <Text style={{fontWeight: 'bold', fontSize: 12}}>20-08-2021</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 12 }}>
+                20-08-2021
+              </Text>
             </View>
           </View>
         </View>
@@ -136,9 +169,10 @@ export default function Issues({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <HeaderMenu />
       <FlatList
         ListHeaderComponent={ListHeaderComponent}
-        contentContainerStyle={styles.scrollView}
+        contentContainerStyle={styles.containerFlat}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -151,19 +185,27 @@ export default function Issues({ navigation }) {
   );
 }
 
+let ScreenHeight = Dimensions.get('window').height;
+let ScreenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   containerFlat: {
-    flex: 1,
-    padding: 8,
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
+  },
+  containerHeaderFlat: {
+    paddingHorizontal: ScreenWidth * 0.05,
+    paddingBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 30,
+    marginTop: 40,
+    marginBottom: 40,
   },
   flatListContainer: {
     marginHorizontal: 20,
@@ -175,7 +217,7 @@ const styles = StyleSheet.create({
   flatListContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   flatListShape: {
     width: 50,
@@ -183,5 +225,66 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginLeft: -30,
+  },
+  button: {
+    backgroundColor: '#FFAC4C',
+    width: 118,
+    height: 26,
+    borderRadius: 8,
+    justifyContent: 'center',
+    marginTop: ScreenHeight * 0.014,
+  },
+  textButton: {
+    color: '#055F9D',
+    textAlign: 'center',
+  },
+  searchInput: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    width: 250,
+    height: 40,
+    marginRight: 5,
+    padding: 8,
+    paddingRight: 30,
+  },
+  radioContainer: {
+    flexDirection: 'row',
+    marginTop: 30,
+    justifyContent: 'flex-end',
+  },
+  radioAll: {
+    width: 58,
+    height: 19,
+    backgroundColor: '#055F9D',
+    justifyContent: 'center',
+    marginHorizontal: 2,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  radioOpen: {
+    width: 58,
+    height: 19,
+    backgroundColor: 'grey',
+    justifyContent: 'center',
+    marginHorizontal: 2,
+  },
+  radioClose: {
+    width: 58,
+    height: 19,
+    backgroundColor: 'grey',
+    justifyContent: 'center',
+    marginHorizontal: 2,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  textRadio: {
+    fontSize: 11,
+    color: 'white',
+    textAlign: 'center',
   },
 });

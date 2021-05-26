@@ -33,8 +33,8 @@ const IssuesStackScreen = () => {
     return (
       <IssuesStack.Navigator initialRouteName="Issues" >
           <IssuesStack.Screen name="Issues" component={Issues} options={{headerShown: false}} />
-          <IssuesStack.Screen name="AddIssues" component={AddIssues} options={{headerShown: false}} />
-          <IssuesStack.Screen name="DetailsIssues" component={DetailsIssues} options={{headerShown: false}} />
+          <IssuesStack.Screen name="AddIssues" component={AddIssues} options={{headerShown: false, animationEnabled: false}} />
+          <IssuesStack.Screen name="DetailsIssues" component={DetailsIssues} options={{headerShown: false, animationEnabled: false}} />
       </IssuesStack.Navigator>
     )
   }

@@ -1,3 +1,5 @@
 import BottomNavigator from './BottomNavigator'
+import HeaderMenu from './HeaderMenu'
+import DetailIssue from './DetailIssue'
 
-export {BottomNavigator}
+export {BottomNavigator, HeaderMenu, DetailIssue}
