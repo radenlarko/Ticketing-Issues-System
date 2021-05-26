@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,20 +13,27 @@ import {
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-import { AuthContext } from '../../components/AuthContext';
-import Users from '../../models/Users';
+import {AuthContext} from '../../components/AuthContext';
+// import Users from '../../models/Users';
 
 const SignIn = ({navigation}) => {
+  const [loading, setLoading] = useState(false);
+  // const [login, setLogin] = useState({
+  //   email: '',
+  //   username: '',
+  //   token: '',
+  // });
+
   const [data, setData] = useState({
     email: '',
     password: '',
     check_textInputChange: false,
     secureTextEntry: true,
     isValidUser: true,
-    isValidPassword: true
+    isValidPassword: true,
   });
 
-  const { signIn } = useContext(AuthContext);
+  const {signIn} = useContext(AuthContext);
 
   const textInputChange = (value) => {
     if (value.trim().length >= 6) {
@@ -47,12 +54,12 @@ const SignIn = ({navigation}) => {
   };
 
   const handlePasswordChange = (value) => {
-    if ( value.trim().length >= 8 ) {
+    if (value.trim().length >= 8) {
       setData({
         ...data,
         password: value,
         isValidPassword: true,
-      })
+      });
     } else {
       setData({
         ...data,
@@ -69,54 +76,67 @@ const SignIn = ({navigation}) => {
     });
   };
 
-  const loginHandle = (userName, password) => {
-    const foundUser = Users.filter( item => {
-      return userName == item.email && password == item.password;
-    });
+  const loginHandle = async () => {
+    setLoading(true);
+    if (!data.email || !data.password) {
+      Alert.alert(
+        'Wrong Input!',
+        'Username or Password field cannot be empty',
+        [{text: 'Ok'}],
+      );
+      console.log('Email or Password cannot be empty!');
+      setLoading(false);
+      return null;
+    };
 
-    if ( data.email.length == 0 || data.password.length == 0){
-      Alert.alert('Wrong Input!', 'Username or Password field cannot be empty', [
-        {text: 'Ok'}
-      ]);
-      return;
-    }
+    try {
+      const user = await signIn(data.email, data.password);
 
-    if ( foundUser.length == 0 ){
-      Alert.alert('Invalid User', 'Username or Password is incorrect', [
-        {text: 'Ok'}
-      ]);
-      return;
+      // Alert.alert('Login success!', `Welcome back ${user.email}`, [
+      //   { text: 'Ok' },
+      // ]);
+
+      return Promise.resolve(user);
+    } catch (error) {
+      if (error.data === null) {
+        Alert.alert(String(error.code), error.message, [{ text: 'Ok' }]);
+      } else {
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+          { text: 'Ok' },
+        ]);
+      }
+
+      setLoading(false);
     }
-    signIn(foundUser);
-  }
+  };
 
   const handleValidUser = (value) => {
-    if ( value.trim().length >= 6 ) {
+    if (value.trim().length >= 6) {
       setData({
         ...data,
-        isValidUser: true
+        isValidUser: true,
       });
     } else {
       setData({
         ...data,
-        isValidUser: false
+        isValidUser: false,
       });
     }
-  }
+  };
 
   const handleValidPassword = (value) => {
-    if ( value.trim().length >= 8 ) {
+    if (value.trim().length >= 8) {
       setData({
         ...data,
-        isValidPassword: true
+        isValidPassword: true,
       });
     } else {
       setData({
         ...data,
-        isValidPassword: false
+        isValidPassword: false,
       });
     }
-  }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -139,15 +159,17 @@ const SignIn = ({navigation}) => {
           onChangeText={(value) => textInputChange(value)}
           onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
         />
-        {data.check_textInputChange ?
-        <Feather name="check-circle" color="#24e35e" size={16} />
-        : null}
+        {data.check_textInputChange ? (
+          <Feather name="check-circle" color="#24e35e" size={16} />
+        ) : null}
       </View>
-      {data.isValidUser ? null :
+      {data.isValidUser ? null : (
         <View>
-          <Text style={styles.errMsg}>Email must be in the correct format.</Text>
+          <Text style={styles.errMsg}>
+            Email must be in the correct format.
+          </Text>
         </View>
-        }
+      )}
       <View style={styles.action}>
         <FontAwesome name="lock" color="grey" size={22} />
         <TextInput
@@ -166,14 +188,19 @@ const SignIn = ({navigation}) => {
           )}
         </TouchableOpacity>
       </View>
-      {data.isValidPassword ? null :
+      {data.isValidPassword ? null : (
         <View>
           <Text style={styles.errMsg}>Password must be 8 characters long.</Text>
         </View>
-        }
-      <TouchableOpacity onPress={() => {loginHandle(data.email, data.password)}}>
+      )}
+      <TouchableOpacity
+        onPress={() => {
+          loginHandle();
+        }}>
         <View style={styles.button}>
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>
+            {loading ? 'Loading...' : 'Sign In'}
+          </Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
@@ -181,6 +208,9 @@ const SignIn = ({navigation}) => {
           <Text style={styles.buttonText}>Sign Up</Text>
         </View>
       </TouchableOpacity>
+      {/* <View>
+        <Text>Token: {login.token}</Text>
+      </View> */}
       <View style={{marginVertical: 20}}></View>
     </ScrollView>
   );
@@ -217,7 +247,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   errMsg: {
-    fontSize: 12, 
-    color: '#ed0c2a'
-  }
+    fontSize: 12,
+    color: '#ed0c2a',
+  },
 });

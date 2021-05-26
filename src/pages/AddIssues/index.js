@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AddIssues = ({ navigation }) => {
     const [title, setTitle] = useState('');
@@ -12,9 +13,10 @@ const AddIssues = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
 
     const endpoint = 'http://127.0.0.1:8000/api';
-    const saveData = () => {
+    const saveData = async () => {
+        let newToken = await AsyncStorage.getItem('userToken');
         setLoading(true);
-
+        
         const dataPost = {
             tickets : {
                 title: title,
@@ -25,28 +27,31 @@ const AddIssues = ({ navigation }) => {
                 statuses_id: status
             }
         }
-        fetch(`${endpoint}/tickets`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Authorization': 'token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDAwXC9hcGlcL3VzZXJzXC9sb2dpbiIsImlhdCI6MTYxNTYzNzA2NywiZXhwIjoxNjIwODIxMDY3LCJuYmYiOjE2MTU2MzcwNjcsImp0aSI6IkRHeGt4ZlZ1MkRNUGtOR0MifQ.9UCdQTJQn-NMXxUOmBcZ2qE3TeD7AshEKCf0BhqRmDI'
-            },
-            body: JSON.stringify(dataPost)
-        })
-        .then(() => {
-            setLoading(false);
-            console.log('Berhasil Post: ', dataPost)
-            setTitle('')
-            setDescription('')
-            setAssign_to('')
-            setCategory('')
-            setPriority('')
-            navigation.navigate('Issues')
-        })
-        .catch((error) => {
+        try{
+            await fetch(`${endpoint}/tickets`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Authorization': `token ${newToken}`
+                },
+                body: JSON.stringify(dataPost)
+            })
+            .then((response) => response.json())
+            .then((json) => {
+                setLoading(false);
+                console.log('Berhasil Post: ', json.ticket.title)
+                setTitle('')
+                setDescription('')
+                setAssign_to('')
+                setCategory('')
+                setPriority('')
+                navigation.navigate('Issues')
+            })
+        }catch(error){
             console.log(error)
-        });
+        }
+        console.log('AddIssues Token: ', newToken);
     };
     return (
         <ScrollView style={styles.container}>

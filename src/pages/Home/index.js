@@ -1,16 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { StyleSheet, Text, View, Button, SafeAreaView } from 'react-native'
 import Icons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
+import {AuthContext} from '../../components/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Home = ({navigation}) => {
+    const [dataUser, setDataUser] = useState({
+        name: '',
+        email: ''
+    })
+    const getUser = async () => {
+        setDataUser({
+            ...dataUser,
+            name: await AsyncStorage.getItem('userName'),
+            email: await AsyncStorage.getItem('userEmail'),
+        })
+    }
+    
+    useEffect(() => {
+        getUser();
+    }, [])
+
       return (
             <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <View style={{flexDirection: "row"}}>
                     <Icons name="person" size={30} color="#055F9D" />
                     <Iconss name="rocket" size={30} color="#055F9D" />
                 </View>
-                <Text>Home Page</Text>
+                <View>
+                    <Text>Selamat datang <Text style={{fontWeight: "bold", fontSize: 18, textTransform: "capitalize"}}>{dataUser.name}</Text></Text>
+                    {/* <Text>{dataUser.email}</Text> */}
+                </View>
                 <Button title="Add Issue" onPress={() => navigation.navigate('Issues', { screen: 'AddIssues' })} />
             </SafeAreaView>
         )

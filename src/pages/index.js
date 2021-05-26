@@ -6,5 +6,6 @@ import DetailsIssues from './DetailsIssues'
 import AddIssues from './AddIssues'
 import SignIn from './SignIn'
 import SignUp from './SignUp'
+import Splash2 from './Splash2'
 
-export {Home, Issues, Account, Splash, DetailsIssues, AddIssues, SignIn, SignUp}
+export {Home, Issues, Account, Splash, DetailsIssues, AddIssues, SignIn, SignUp, Splash2}

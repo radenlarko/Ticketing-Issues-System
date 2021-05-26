@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import React, {useState, useContext, useEffect} from 'react';
+import {View, StyleSheet, StatusBar} from 'react-native';
 import {
   Avatar,
   Title,
@@ -10,28 +10,45 @@ import {
   TouchableRipple,
   Switch,
 } from 'react-native-paper';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { AuthContext } from '../../components/AuthContext';
-
+import {AuthContext} from '../../components/AuthContext';
 
 const DrawerContent = (props) => {
+  const [dataUser, setDataUser] = useState({
+    name: '',
+    email: '',
+  });
+
+  const getUser = async () => {
+    setDataUser({
+      ...dataUser,
+      name: await AsyncStorage.getItem('userName'),
+      email: await AsyncStorage.getItem('userEmail'),
+    });
+  };
+
   const [isDarkTheme, setIsDarkTheme] = useState(false);
-
+  
   const {signOut} = useContext(AuthContext);
-
+  
   const toogleTheme = () => {
     setIsDarkTheme(!isDarkTheme);
-  }
+  };
+  
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f2f2f2' }}>
+    <View style={{flex: 1, backgroundColor: '#f2f2f2'}}>
       <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-      <DrawerContentScrollView {...props} >
+      <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
-            <View style={{ flexDirection: 'row', marginTop: 15 }}>
+            <View style={{flexDirection: 'row', marginTop: 15}}>
               <Avatar.Image
                 source={{
                   uri:
@@ -39,12 +56,14 @@ const DrawerContent = (props) => {
                 }}
                 size={50}
               />
-              <View style={{ marginLeft: 15, justifyContent: 'flex-end' }}>
-                <Text style={styles.title}>Yos Sularko</Text>
-                <Caption style={styles.caption}>@Yossularko</Caption>
+              <View style={{marginLeft: 15, justifyContent: 'flex-end'}}>
+                <Text style={styles.title}>{dataUser.name}</Text>
+                <Caption style={styles.email}>{dataUser.email}</Caption>
               </View>
             </View>
-            <Paragraph style={[styles.paragraf, {marginTop: 20}]}>Issues Status</Paragraph>
+            <Paragraph style={[styles.paragraf, {marginTop: 20}]}>
+              Issues Status
+            </Paragraph>
             <View style={styles.row}>
               <View style={styles.section}>
                 <Paragraph style={(styles.paragraf, styles.caption)}>
@@ -72,7 +91,9 @@ const DrawerContent = (props) => {
                 );
               }}
               label="Home"
-              onPress={() => {props.navigation.navigate('Home')}}
+              onPress={() => {
+                props.navigation.navigate('Home');
+              }}
             />
             <DrawerItem
               icon={({color, size}) => {
@@ -85,7 +106,9 @@ const DrawerContent = (props) => {
                 );
               }}
               label="Issues"
-              onPress={() => {props.navigation.navigate('Issues', {screen: 'Issues'})}}
+              onPress={() => {
+                props.navigation.navigate('Issues', {screen: 'Issues'});
+              }}
             />
             <DrawerItem
               icon={({color, size}) => {
@@ -98,11 +121,16 @@ const DrawerContent = (props) => {
                 );
               }}
               label="Account"
-              onPress={() => {props.navigation.navigate('Account')}}
+              onPress={() => {
+                props.navigation.navigate('Account');
+              }}
             />
           </Drawer.Section>
           <Drawer.Section title="Preferences">
-            <TouchableRipple onPress={() => {toogleTheme()}}>
+            <TouchableRipple
+              onPress={() => {
+                toogleTheme();
+              }}>
               <View style={styles.preference}>
                 <Text>Dark Theme</Text>
                 <View pointerEvents="none">
@@ -125,7 +153,9 @@ const DrawerContent = (props) => {
             );
           }}
           label="Sign Out"
-          onPress={() => {signOut()}}
+          onPress={() => {
+            signOut();
+          }}
         />
       </Drawer.Section>
     </View>
@@ -145,6 +175,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 3,
     fontWeight: 'bold',
+    textTransform: 'capitalize',
+  },
+  email: {
+    fontSize: 12,
+    lineHeight: 14,
+    maxWidth: 165,
   },
   caption: {
     fontSize: 12,

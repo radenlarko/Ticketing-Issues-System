@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { RefreshControl, SafeAreaView, Text, View, StyleSheet, FlatList, Image, Button, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const wait = (timeout) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -20,19 +21,22 @@ export default function Issues({navigation}) {
   const endpoint = 'http://127.0.0.1:8000/api';
   const getData = async () => {
     try {
+      let newToken = await AsyncStorage.getItem('userToken');
       let response = await fetch(`${endpoint}/ticket/ticketuser`, {
-          method: 'GET',
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest',
-              'Authorization': 'token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjMsImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDAwXC9hcGlcL3VzZXJzXC9sb2dpbiIsImlhdCI6MTYxNTYzNzA2NywiZXhwIjoxNjIwODIxMDY3LCJuYmYiOjE2MTU2MzcwNjcsImp0aSI6IkRHeGt4ZlZ1MkRNUGtOR0MifQ.9UCdQTJQn-NMXxUOmBcZ2qE3TeD7AshEKCf0BhqRmDI'
-          }
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          Authorization:
+            `token ${newToken}`,
+        },
       });
       let json = await response.json();
       setData(json.tickets);
-      console.log('data ticket: ', json.tickets)
-    } catch(error) {
+      console.log('Issues Token: ', newToken);
+      // console.log('data ticket: ', json.tickets)
+    } catch (error) {
       console.error(error);
     }
   };

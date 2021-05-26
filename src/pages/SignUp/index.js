@@ -9,63 +9,222 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  Alert,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 
 const SignUp = ({navigation}) => {
-    const [data, setData] = useState({
-        email: '',
-        password: '',
-        confirm_pass: '',
-        check_textInputChange: false,
-        securePassword: true,
-        secureConfirm_Pass: true,
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirm_pass: '',
+    check_userInputChange: false,
+    check_emailInputChange: false,
+    securePassword: true,
+    secureConfirm_Pass: true,
+    isValidUser: true,
+    isValidEmail: true,
+    isValidPassword: true,
+    isValidConfirm_Pass: true,
+  });
+
+  const userInputChange = (value) => {
+    if (value.trim().length >= 6) {
+      setData({
+        ...data,
+        username: value,
+        check_userInputChange: true,
+        isValidUser: true,
       });
-    
-      const textInputChange = (value) => {
-        if (value.length !== 0) {
-          setData({
-            ...data,
-            email: value,
-            check_textInputChange: true,
-          });
-        } else {
-          setData({
-            ...data,
-            email: value,
-            check_textInputChange: false,
-          });
-        }
-      };
-    
-      const handlePasswordChange = (value) => {
-        setData({
-          ...data,
-          password: value,
-        });
-      };
+    } else {
+      setData({
+        ...data,
+        username: value,
+        check_userInputChange: false,
+        isValidUser: false,
+      });
+    }
+  };
 
-      const handleConfirm_PassChange = (value) => {
-        setData({
-          ...data,
-          confirm_pass: value,
-        });
-      };
-    
-      const updateSecurePassword = () => {
-        setData({
-          ...data,
-          securePassword: !data.securePassword,
-        });
-      };
+  const emailInputChange = (value) => {
+    if (value.trim().length >= 6) {
+      setData({
+        ...data,
+        email: value,
+        check_emailInputChange: true,
+        isValidEmail: true,
+      });
+    } else {
+      setData({
+        ...data,
+        email: value,
+        check_emailInputChange: false,
+        isValidEmail: false,
+      });
+    }
+  };
 
-      const updateSecureConfirm_pass = () => {
-        setData({
-          ...data,
-          secureConfirm_Pass: !data.secureConfirm_Pass,
-        });
-      };
+  const handlePasswordChange = (value) => {
+    if (value.trim().length >= 8) {
+      setData({
+        ...data,
+        password: value,
+        isValidPassword: true,
+      });
+    } else {
+      setData({
+        ...data,
+        password: value,
+        isValidPassword: false,
+      });
+    }
+  };
+
+  const handleConfirm_PassChange = (value) => {
+    if (value === data.password) {
+      setData({
+        ...data,
+        confirm_pass: value,
+        isValidConfirm_Pass: true,
+      });
+    } else {
+      setData({
+        ...data,
+        confirm_pass: value,
+        isValidConfirm_Pass: false,
+      });
+    }
+  };
+
+  const updateSecurePassword = () => {
+    setData({
+      ...data,
+      securePassword: !data.securePassword,
+    });
+  };
+
+  const updateSecureConfirm_pass = () => {
+    setData({
+      ...data,
+      secureConfirm_Pass: !data.secureConfirm_Pass,
+    });
+  };
+
+  const registerHandle = async () => {
+    setLoading(true);
+    const dataRegister = {
+      user: {
+        username: data.username,
+        email: data.email,
+        password: data.confirm_pass,
+      },
+    };
+    if(data.password === data.confirm_pass){
+      try {
+        await fetch('http://localhost:8000/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(dataRegister)
+        })
+        .then((response) => response.json())
+        .then((json) => {
+          setLoading(false);
+          if(json.user){
+            console.log('berhasil daftar ', json.user.email)
+            Alert.alert('Berhasil!', `Berhasil daftar ${json.user.email}`, [
+              { text: 'Ok' }
+            ]);
+            navigation.navigate('SignIn')
+          }else if(json.errors){
+            console.log('Form tidak boleh kosong!!')
+            Alert.alert('Error!', 'Form tidak boleh kosong!!', [
+              { text: 'Ok' }
+            ]);
+          }else{
+            console.log('Gagal Register!!')
+            Alert.alert('Error!', 'Gagal Register!!', [
+              { text: 'Ok' }
+            ]);
+          }
+        })
+      } catch (error) {
+        setLoading(false);
+        console.log(error);
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+          { text: 'Ok' }
+        ]);
+      }
+    }else{
+      setLoading(false);
+      Alert.alert('Error!', 'Registration failed!!', [
+        { text: 'Ok' }
+      ]);
+      console.log('Password tidak sama!!')
+    }
+  };
+
+  const handleValidUser = (value) => {
+    if (value.trim().length >= 6) {
+      setData({
+        ...data,
+        isValidUser: true,
+      });
+    } else {
+      setData({
+        ...data,
+        isValidUser: false,
+      });
+    }
+  };
+
+  const handleValidEmail = (value) => {
+    if (value.trim().length >= 6) {
+      setData({
+        ...data,
+        isValidEmail: true,
+      });
+    } else {
+      setData({
+        ...data,
+        isValidEmail: false,
+      });
+    }
+  };
+
+  const handleValidPassword = (value) => {
+    if (value.trim().length >= 8) {
+      setData({
+        ...data,
+        isValidPassword: true,
+      });
+    } else {
+      setData({
+        ...data,
+        isValidPassword: false,
+      });
+    }
+  };
+
+  const handleValidConfirm_Pass = (value) => {
+    if (value === data.password) {
+      setData({
+        ...data,
+        isValidConfirm_pass: true,
+      });
+    } else {
+      setData({
+        ...data,
+        isValidConfirm_pass: false,
+      });
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
@@ -81,15 +240,41 @@ const SignUp = ({navigation}) => {
       <View style={styles.action}>
         <FontAwesome name="user" color="grey" size={20} />
         <TextInput
+          placeholder="enter your username"
+          style={styles.textInput}
+          autoCapitalize="none"
+          onChangeText={(value) => userInputChange(value)}
+          onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
+        />
+        {data.check_userInputChange ? (
+          <Feather name="check-circle" color="#24e35e" size={16} />
+        ) : null}
+      </View>
+      {data.isValidUser ? null : (
+        <View>
+          <Text style={styles.errMsg}>Username minimum 6 characters long.</Text>
+        </View>
+      )}
+      <View style={styles.action}>
+        <FontAwesome name="user" color="grey" size={20} />
+        <TextInput
           placeholder="enter your email"
           style={styles.textInput}
           autoCapitalize="none"
-          onChangeText={(value) => textInputChange(value)}
+          onChangeText={(value) => emailInputChange(value)}
+          onEndEditing={(e) => handleValidEmail(e.nativeEvent.text)}
         />
-        {data.check_textInputChange ?
-        <Feather name="check-circle" color="#24e35e" size={16} />
-        : null}
+        {data.check_emailInputChange ? (
+          <Feather name="check-circle" color="#24e35e" size={16} />
+        ) : null}
       </View>
+      {data.isValidEmail ? null : (
+        <View>
+          <Text style={styles.errMsg}>
+            Email must be in the correct format.
+          </Text>
+        </View>
+      )}
       <View style={styles.action}>
         <FontAwesome name="lock" color="grey" size={22} />
         <TextInput
@@ -98,6 +283,7 @@ const SignUp = ({navigation}) => {
           style={styles.textInput}
           autoCapitalize="none"
           onChangeText={(value) => handlePasswordChange(value)}
+          onEndEditing={(e) => handleValidPassword(e.nativeEvent.text)}
         />
         <TouchableOpacity onPress={updateSecurePassword}>
           {data.securePassword ? (
@@ -107,6 +293,11 @@ const SignUp = ({navigation}) => {
           )}
         </TouchableOpacity>
       </View>
+      {data.isValidPassword ? null : (
+        <View>
+          <Text style={styles.errMsg}>Password must be 8 characters long.</Text>
+        </View>
+      )}
       <View style={styles.action}>
         <FontAwesome name="lock" color="grey" size={22} />
         <TextInput
@@ -115,6 +306,7 @@ const SignUp = ({navigation}) => {
           style={styles.textInput}
           autoCapitalize="none"
           onChangeText={(value) => handleConfirm_PassChange(value)}
+          onEndEditing={(e) => handleValidConfirm_Pass(e.nativeEvent.text)}
         />
         <TouchableOpacity onPress={updateSecureConfirm_pass}>
           {data.secureConfirm_Pass ? (
@@ -124,9 +316,16 @@ const SignUp = ({navigation}) => {
           )}
         </TouchableOpacity>
       </View>
-      <TouchableOpacity>
+      {data.isValidConfirm_Pass ? null : (
+        <View>
+          <Text style={styles.errMsg}>
+            Password confirmation does not match!
+          </Text>
+        </View>
+      )}
+      <TouchableOpacity onPress={() => registerHandle()}>
         <View style={styles.button}>
-          <Text style={styles.buttonText}>Sign Up</Text>
+          <Text style={styles.buttonText}>{loading ? 'Loading...' : 'Sign Up'}</Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
@@ -168,5 +367,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  errMsg: {
+    fontSize: 12,
+    color: '#ed0c2a',
   },
 });
