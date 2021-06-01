@@ -32,9 +32,13 @@ export default function Issues() {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [filterIssue, setFilterIssue] = useState(false);
+  const [loadData, setLoadData] = useState(5);
   const { searchData } = useContext(AuthContext);
   const authContext = useContext(AuthContext);
   const dataIssues = authContext.dataApi;
+
+  // console.log('data Issues: ', dataIssues)
+  console.log('Search: ', authContext.dataSearch);
 
   const filterAll = useCallback(() => {
     setFilterIssue(false);
@@ -66,7 +70,11 @@ export default function Issues() {
       ? []
       : [...dataIssues]
           .sort((a, b) => (a.id > b.id ? -1 : 1))
-          .filter((data) => data.title.includes(authContext.dataSearch))
+          .filter((data) =>
+            data.title.includes(
+              authContext.dataSearch == undefined ? '' : authContext.dataSearch,
+            ),
+          )
           .filter(
             filterIssue
               ? (data) => data.statuses_id == filterIssue
@@ -77,8 +85,9 @@ export default function Issues() {
                   data.statuses_id == 3 ||
                   data.statuses_id == 4
               : null,
-          );
-  }, [dataIssues, authContext.dataSearch, filterIssue]);
+          )
+          .slice(0, loadData);
+  }, [dataIssues, authContext.dataSearch, filterIssue, loadData]);
 
   const ListHeaderComponent = () => {
     const [search, setSearch] = useState('' || authContext.dataSearch);
@@ -233,7 +242,15 @@ export default function Issues() {
           no issues
         </Text>
       </View>
-    ) : null;
+    ) : (
+      <View
+        style={{
+          alignItems: 'center',
+          margin: 20,
+        }}>
+        {loadData == newData.length ? <MyButton label="Load More" navigasi={() => setLoadData(loadData + 5)} /> : null}
+      </View>
+    );
   };
 
   return (

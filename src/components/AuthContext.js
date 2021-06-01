@@ -42,10 +42,11 @@ const loginReducer = (prevState, action) => {
     case 'LOGOUT':
       return {
         ...prevState,
-        dataApi: [],
         userName: null,
         userEmail: null,
         userToken: null,
+        dataApi: [],
+        dataSearch: '',
         isLoading: false,
       };
     case 'REGISTER':
