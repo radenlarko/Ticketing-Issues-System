@@ -11,6 +11,10 @@ import {
   Platform,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  TouchableOpacity,
 } from 'react-native';
 import { IconLogout } from '../../assets';
 import { HeaderMenu, MyButton } from '../../components';
@@ -20,10 +24,23 @@ import Feather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../../components/AuthContext';
 
 export default function Account() {
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [secureEntry, setSecureEntry] = useState(true);
+  const [confirmEntry, setconfirmEntry] = useState(true);
   const { signOut } = useContext(AuthContext);
   const authContext = useContext(AuthContext);
 
   let nameRound = authContext.userName.substr(0, 1);
+
+  const secureEntryHandle = () => {
+    setSecureEntry(!secureEntry);
+  };
+
+  const secureConfirmHandle = () => {
+    setconfirmEntry(!confirmEntry);
+  };
 
   const signOutHandle = async () => {
     try {
@@ -35,76 +52,195 @@ export default function Account() {
         console.log(error.code + ' ' + error.message);
         Alert.alert(String(error.code), error.message, [{ text: 'Ok' }]);
       } else {
-        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [{ text: 'Ok' }]);
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+          { text: 'Ok' },
+        ]);
       }
     }
   };
+
+  const changePasswordHandle = async () => {
+    if (!newPassword || !confirmPassword) {
+      Alert.alert('Wrong Input!', 'Field cannot be empty!!', [{ text: 'Ok' }]);
+      setLoading(false);
+
+      return null;
+    }
+
+    if (newPassword.trim().length <= 7) {
+      Alert.alert('New Password Error!!', 'Title minimum 8 characters long.');
+      setLoading(false);
+
+      return null;
+    }
+
+    if (confirmPassword.trim().length <= 7) {
+      Alert.alert(
+        'Confirm Password Error!!',
+        'Description minimum 8 characters long.',
+      );
+      setLoading(false);
+
+      return null;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error!!', 'Confirm Password does not match!');
+      setLoading(false);
+
+      return null;
+    }
+
+    try {
+      setLoading(true);
+      const tokenChange = authContext.userToken;
+      const response = await fetch('http://localhost:8000/api/user', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          Authorization: `token ${tokenChange}`,
+        },
+        body: JSON.stringify({
+          user: {
+            password: confirmPassword,
+          },
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Error Change: ', data.errors);
+
+      if (data.errors) {
+        console.log('error: ', data.errors.password);
+        return Promise.reject(data);
+      }
+
+      Alert.alert(
+        'Success!',
+        `Congratulation ${data.user.username}, your password has been successfully changed.`,
+        [{ text: 'Ok' }],
+      );
+
+      setNewPassword('');
+      setConfirmPassword('');
+      setLoading(false);
+      signOutHandle();
+
+      return Promise.resolve(data);
+    } catch (error) {
+      if (error.errors) {
+        Alert.alert('Error!', error.errors.password, [{ text: 'Ok' }]);
+      } else {
+        Alert.alert('Error!', 'Request Failed.. Server not responding!!', [
+          { text: 'Ok' },
+        ]);
+      }
+      setLoading(false);
+    }
+  };
   return (
-    <View>
-      <HeaderMenu rightButton={<IconLogout />} rightButtonNav={signOutHandle} />
-      <ScrollView>
-        <View style={styles.header}></View>
-        <View style={styles.main}>
-          <View style={styles.avaRound}>
-            <Text style={styles.avaText}>{nameRound}</Text>
-          </View>
-          <View style={styles.profileContent}>
-            <Text style={{ fontWeight: 'bold' }}>Welcome</Text>
-            <Text style={styles.username}>{authContext.userName}</Text>
-            <Text style={{ color: 'grey' }}>{authContext.userEmail}</Text>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{authContext.openIssue}</Text>
-              <Text style={styles.cardLabel}>Open Issue</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <>
+          <HeaderMenu
+            rightButton={<IconLogout />}
+            rightButtonNav={signOutHandle}
+          />
+          <ScrollView>
+            <View style={styles.header}></View>
+            <View style={styles.main}>
+              <View style={styles.avaRound}>
+                <Text style={styles.avaText}>{nameRound}</Text>
+              </View>
+              <View style={styles.profileContent}>
+                <Text style={{ fontWeight: 'bold' }}>Welcome</Text>
+                <Text style={styles.username}>{authContext.userName}</Text>
+                <Text style={{ color: 'grey' }}>{authContext.userEmail}</Text>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>{authContext.openIssue}</Text>
+                  <Text style={styles.cardLabel}>Open Issue</Text>
+                </View>
+                <View style={styles.card}>
+                  <Text style={styles.cardTitle}>{authContext.closeIssue}</Text>
+                  <Text style={styles.cardLabel}>Closed Issue</Text>
+                </View>
+              </View>
+              <View style={styles.changePassContainer}>
+                <Text style={{ marginVertical: 10 }}>Change Password</Text>
+                <View style={styles.action}>
+                  <FontAwesome name="lock" color="grey" size={22} />
+                  <TextInput
+                    placeholder="enter your new password"
+                    secureTextEntry={secureEntry ? true : false}
+                    style={styles.textInput}
+                    autoCapitalize="none"
+                    value={newPassword}
+                    onChangeText={(value) => setNewPassword(value)}
+                  />
+                  <TouchableOpacity onPress={secureEntryHandle}>
+                    {secureEntry ? (
+                      <Feather name="eye-off" color="grey" size={16} />
+                    ) : (
+                      <Feather name="eye" color="grey" size={16} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {newPassword.trim().length == 0 ? null : newPassword.trim()
+                    .length <= 7 ? (
+                  <View>
+                    <Text style={styles.errMsg}>
+                      New Password must be 8 characters long.
+                    </Text>
+                  </View>
+                ) : null}
+                <View style={styles.action}>
+                  <FontAwesome name="lock" color="grey" size={22} />
+                  <TextInput
+                    placeholder="enter your confirm new password"
+                    secureTextEntry={confirmEntry ? true : false}
+                    style={styles.textInput}
+                    autoCapitalize="none"
+                    value={confirmPassword}
+                    onChangeText={(value) => setConfirmPassword(value)}
+                  />
+                  <TouchableOpacity onPress={secureConfirmHandle}>
+                    {confirmEntry ? (
+                      <Feather name="eye-off" color="grey" size={16} />
+                    ) : (
+                      <Feather name="eye" color="grey" size={16} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {confirmPassword.trim().length == 0 ? null : confirmPassword.trim()
+                    .length <= 7 ? (
+                  <View>
+                    <Text style={styles.errMsg}>
+                      Confirm Password must be 8 characters long.
+                    </Text>
+                  </View>
+                ) : null}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                    marginVertical: 20,
+                  }}>
+                  <MyButton
+                    label={loading ? 'Loading...' : 'Submit'}
+                    navigasi={changePasswordHandle}
+                  />
+                </View>
+              </View>
             </View>
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{authContext.closeIssue}</Text>
-              <Text style={styles.cardLabel}>Closed Issue</Text>
-            </View>
-          </View>
-          <View style={styles.changePassContainer}>
-            <Text style={{marginVertical: 10}}>Change Password</Text>
-            <View style={styles.action}>
-              <FontAwesome name="lock" color="grey" size={22} />
-              <TextInput
-                placeholder="enter your password"
-                secureTextEntry={true}
-                style={styles.textInput}
-                autoCapitalize="none"
-              />
-              <Feather name="eye-off" color="grey" size={16} />
-            </View>
-            <View style={styles.action}>
-              <FontAwesome name="lock" color="grey" size={22} />
-              <TextInput
-                placeholder="enter your new password"
-                secureTextEntry={true}
-                style={styles.textInput}
-                autoCapitalize="none"
-              />
-              <Feather name="eye-off" color="grey" size={16} />
-            </View>
-            <View style={styles.action}>
-              <FontAwesome name="lock" color="grey" size={22} />
-              <TextInput
-                placeholder="enter your confirm new password"
-                secureTextEntry={true}
-                style={styles.textInput}
-                autoCapitalize="none"
-              />
-              <Feather name="eye-off" color="grey" size={16} />
-            </View>
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end', marginVertical: 20}}>
-              <MyButton 
-                label="Submit"
-                navigasi={() => Alert.alert('Coming Soon!', 'Change password feature is coming soon!')}
-              />
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
+          </ScrollView>
+        </>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -119,7 +255,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
   },
   main: {
-    height: ScreenHeight,
+    minHeight: ScreenHeight,
     padding: ScreenWidth * 0.05,
     alignItems: 'center',
   },
@@ -137,15 +273,15 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 72,
   },
-  profileContent: { 
-    marginVertical: 20, 
-    alignItems: 'center' 
+  profileContent: {
+    marginVertical: 20,
+    alignItems: 'center',
   },
-  username : { 
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    color: '#055F9D', 
-    textTransform: 'capitalize' 
+  username: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#055F9D',
+    textTransform: 'capitalize',
   },
   card: {
     width: 120,
@@ -164,14 +300,14 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginHorizontal: 5,
   },
-  cardTitle: { 
-    color: '#4D4D4D', 
-    fontSize: 24, 
-    fontWeight: 'bold' 
+  cardTitle: {
+    color: '#4D4D4D',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
-  cardLabel: { 
-    color: '#4D4D4D', 
-    fontSize: 12 
+  cardLabel: {
+    color: '#4D4D4D',
+    fontSize: 12,
   },
   changePassContainer: {
     width: ScreenWidth * 0.86,
@@ -202,6 +338,10 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
     color: '#242424',
+  },
+  errMsg: {
+    fontSize: 12,
+    color: '#ed0c2a',
   },
 });
 
