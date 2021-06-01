@@ -13,7 +13,7 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import Icons from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from '../../components/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -33,7 +33,7 @@ import { MyButton } from '../../components';
 const Home = () => {
   const navigation = useNavigation();
   const authContext = useContext(AuthContext);
-  const { getData, searchData } = useContext(AuthContext);
+  const { getData, searchData, countData } = useContext(AuthContext);
   const dataIssues = authContext.dataApi;
 
   const newData =
@@ -58,19 +58,25 @@ const Home = () => {
   };
 
   useEffect(() => {
-    getDataToStore();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      getDataToStore();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const ListHeaderComponent = () => {
     const [search, setSearch] = useState('');
 
     searchHandle = () => {
       searchData(search);
-      navigation.navigate('Issues');
-    }
+      navigation.navigate('Issues', { screen: 'Issues' });
+    };
     return (
       <>
-        <ImageBackground source={BgHomeHeaderSmall} style={{ flex: 1 }} style={styles.header}>
+        <ImageBackground
+          source={BgHomeHeaderSmall}
+          style={[styles.header, { flex: 1, backgroundColor: '#055F9D' }]}>
           <View style={{ marginTop: ScreenHeight * 0.03 }}></View>
           <Image style={styles.logo} source={LogoWhite} />
           <View style={{ marginTop: ScreenHeight * 0.044 }}></View>
@@ -101,7 +107,7 @@ const Home = () => {
                 </Text>
               </View>
               <View style={styles.cardContent}>
-                <Text style={[styles.cardText, { color: '#055F9D' }]}>23</Text>
+                <Text style={[styles.cardText, { color: '#055F9D' }]}>{authContext.openIssue}</Text>
               </View>
             </View>
             <View style={styles.card}>
@@ -112,7 +118,7 @@ const Home = () => {
                 </Text>
               </View>
               <View style={styles.cardContent}>
-                <Text style={[styles.cardText, { color: '#D62923' }]}>127</Text>
+                <Text style={[styles.cardText, { color: '#D62923' }]}>{authContext.closeIssue}</Text>
               </View>
             </View>
           </View>
@@ -124,14 +130,25 @@ const Home = () => {
               value={search}
               onChangeText={(value) => setSearch(value)}
             />
-            <View style={{ marginLeft: -30 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setSearch('');
+              }}
+              style={{ marginLeft: -50 }}>
+              <Ionicons name="close-circle-outline" size={20} color="#ccc" />
+            </TouchableOpacity>
+            <View style={{ marginLeft: 5 }}>
               <MyButton label="Search" navigasi={searchHandle} />
             </View>
           </View>
         </View>
         <View style={styles.latestIssues}>
           <Text style={styles.title}>Latest Issues</Text>
-          {newData.length == 0 ? <View style={{marginBottom: 50}}><Text>no issues</Text></View> : null}
+          {newData.length == 0 ? (
+            <View style={{ marginBottom: 50 }}>
+              <Text>no issues</Text>
+            </View>
+          ) : null}
         </View>
       </>
     );
@@ -151,7 +168,12 @@ const Home = () => {
     }
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('Issues', { screen: 'DetailsIssues', params: { item: item }})}>
+        onPress={() =>
+          navigation.navigate('Issues', {
+            screen: 'DetailsIssues',
+            params: { item: item },
+          })
+        }>
         <View style={styles.flatListContainer}>
           <View style={styles.flatListContent}>
             <View
@@ -198,7 +220,11 @@ const Home = () => {
 
   const ListFooterComponent = () => {
     return (
-      <View style={{backgroundColor: '#fafafa', height: ScreenHeight*0.08}}></View>
+      <View
+        style={{
+          backgroundColor: '#fafafa',
+          height: ScreenHeight * 0.08,
+        }}></View>
     );
   };
 
@@ -302,7 +328,7 @@ const styles = StyleSheet.create({
   searchInput: {
     backgroundColor: 'white',
     borderRadius: 8,
-    width: 250,
+    width: 270,
     height: 40,
     marginRight: 5,
     padding: 8,

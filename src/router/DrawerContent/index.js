@@ -70,13 +70,13 @@ const DrawerContent = (props) => {
             <View style={styles.row}>
               <View style={styles.section}>
                 <Paragraph style={(styles.paragraf, styles.caption)}>
-                  23
+                  {authContext.openIssue}
                 </Paragraph>
                 <Caption style={styles.caption}> Open</Caption>
               </View>
               <View style={styles.section}>
                 <Paragraph style={(styles.paragraf, styles.caption)}>
-                  127
+                  {authContext.closeIssue}
                 </Paragraph>
                 <Caption style={styles.caption}> Closed</Caption>
               </View>

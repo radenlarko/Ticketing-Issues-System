@@ -8,6 +8,8 @@ const initialLoginState = {
   userName: null,
   userEmail: null,
   userToken: null,
+  openIssue: 0,
+  closeIssue: 0,
   dataApi: [],
   dataSearch: '',
   signIn: () => null,
@@ -58,6 +60,8 @@ const loginReducer = (prevState, action) => {
       return {
         ...prevState,
         dataApi: action.data,
+        openIssue: action.open,
+        closeIssue: action.close,
         isLoading: false,
       };
     case 'SEARCHDATA':
@@ -218,11 +222,17 @@ const AuthProvider = ({ children }) => {
       const data = await response.json();
       // console.log('data store: ', data.tickets);
 
+      const newIssue = data.tickets.filter((data) => data.statuses_id == 1).length;
+      const assignIssue = data.tickets.filter((data) => data.statuses_id == 2).length;
+      const resolveIssue = data.tickets.filter((data) => data.statuses_id == 3).length;
+      const closedIssue = data.tickets.filter((data) => data.statuses_id == 4).length;
+      const openedIssue = newIssue + assignIssue + resolveIssue;
+
       if (data.errors) {
-        return Promise.reject(data);
+        return Promise.reject(data, newIssue, assignIssue, resolveIssue, closedIssue, openedIssue);
       }
 
-      dispatch({ type: 'GETDATA', data: data.tickets });
+      dispatch({ type: 'GETDATA', data: data.tickets, open: openedIssue, close: closedIssue });
 
       return Promise.resolve(data.tickets);
     } catch (error) {
@@ -232,14 +242,14 @@ const AuthProvider = ({ children }) => {
   };
 
   const searchData = (search) => {
-    try{
-      dispatch({ type: 'SEARCHDATA', search: search });
-      return Promise.resolve(search)
-    } catch(error) {
+    try {
+      dispatch({ type: 'SEARCHDATA', search });
+      return Promise.resolve(search);
+    } catch (error) {
       console.log(error);
       return Promise.reject(error);
     }
-  }
+  };
 
   return (
     <AuthContext.Provider

@@ -24,7 +24,7 @@ const MainTabApp = () => {
 const HomeStackScreen = () => {
     return (
       <HomeStack.Navigator initialRouteName="Home" >
-          <HomeStack.Screen name="Home" component={Home} options={{headerShown: false}} />
+          <HomeStack.Screen name="Home" component={Home} options={{headerShown: false, animationEnabled: false}} />
       </HomeStack.Navigator>
     )
   }
@@ -32,7 +32,7 @@ const HomeStackScreen = () => {
 const IssuesStackScreen = () => {
     return (
       <IssuesStack.Navigator initialRouteName="Issues" >
-          <IssuesStack.Screen name="Issues" component={Issues} options={{headerShown: false}} />
+          <IssuesStack.Screen name="Issues" component={Issues} options={{headerShown: false, animationEnabled: false}} />
           <IssuesStack.Screen name="AddIssues" component={AddIssues} options={{headerShown: false, animationEnabled: false}} />
           <IssuesStack.Screen name="DetailsIssues" component={DetailsIssues} options={{headerShown: false, animationEnabled: false}} />
       </IssuesStack.Navigator>
@@ -42,7 +42,7 @@ const IssuesStackScreen = () => {
 const AccountStackScreen = () => {
     return (
       <AccountStack.Navigator >
-          <AccountStack.Screen name="Account" component={Account} options={{headerShown: false}} />
+          <AccountStack.Screen name="Account" component={Account} options={{headerShown: false, animationEnabled: false}} />
       </AccountStack.Navigator>
     )
   }

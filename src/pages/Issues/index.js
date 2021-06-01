@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import {
   RefreshControl,
   SafeAreaView,
@@ -11,6 +17,7 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { HeaderMenu, MyButton } from '../../components';
 import { AuthContext } from '../../components/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -24,24 +31,61 @@ const wait = (timeout) => {
 export default function Issues() {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const [filterIssue, setFilterIssue] = useState(false);
+  const { searchData } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
+  const dataIssues = authContext.dataApi;
+
+  const filterAll = useCallback(() => {
+    setFilterIssue(false);
+  }, [setFilterIssue]);
+
+  const filterNew = useCallback(() => {
+    setFilterIssue(1);
+  }, [setFilterIssue]);
+
+  const filterAssign = useCallback(() => {
+    setFilterIssue(2);
+  }, [setFilterIssue]);
+
+  const filterResolve = useCallback(() => {
+    setFilterIssue(3);
+  }, [setFilterIssue]);
+
+  const filterClose = useCallback(() => {
+    setFilterIssue(4);
+  }, [setFilterIssue]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1500).then(() => setRefreshing(false));
   }, []);
 
-  const { searchData } = useContext(AuthContext);
-  const authContext = useContext(AuthContext);
-  const dataIssues = authContext.dataApi;
-
-  const newData =
-    dataIssues == undefined
+  const newData = useMemo(() => {
+    return dataIssues == undefined
       ? []
-      : [...dataIssues].sort((a, b) => (a.id > b.id ? -1 : 1));
+      : [...dataIssues]
+          .sort((a, b) => (a.id > b.id ? -1 : 1))
+          .filter((data) => data.title.includes(authContext.dataSearch))
+          .filter(
+            filterIssue
+              ? (data) => data.statuses_id == filterIssue
+              : !filterIssue
+              ? (data) =>
+                  data.statuses_id == 1 ||
+                  data.statuses_id == 2 ||
+                  data.statuses_id == 3 ||
+                  data.statuses_id == 4
+              : null,
+          );
+  }, [dataIssues, authContext.dataSearch, filterIssue]);
 
   const ListHeaderComponent = () => {
     const [search, setSearch] = useState('' || authContext.dataSearch);
-    console.log(search);
+
+    searchHandle = () => {
+      searchData(search);
+    };
 
     return (
       <View style={styles.containerHeaderFlat}>
@@ -59,22 +103,55 @@ export default function Issues() {
               searchData('');
             }}
             style={{ marginLeft: -50 }}>
-            <Text style={{ color: 'grey', fontSize: 11 }}>clear</Text>
+            <Ionicons name="close-circle-outline" size={20} color="#ccc" />
           </TouchableOpacity>
+          <View style={{ marginLeft: 5 }}>
+            <MyButton label="Search" navigasi={searchHandle} />
+          </View>
         </View>
         <View style={styles.radioContainer}>
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.radioAll}>
+          <TouchableOpacity onPress={filterAll}>
+            <View
+              style={[
+                styles.radioAll,
+                { backgroundColor: filterIssue ? '#ADADAD' : '#055F9D' },
+              ]}>
               <Text style={styles.textRadio}>All</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.radioOpen}>
-              <Text style={styles.textRadio}>Open</Text>
+          <TouchableOpacity onPress={filterNew}>
+            <View
+              style={[
+                styles.radioMiddle,
+                { backgroundColor: filterIssue == 1 ? '#00758f' : '#ADADAD' },
+              ]}>
+              <Text style={styles.textRadio}>New</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.radioClose}>
+          <TouchableOpacity onPress={filterAssign}>
+            <View
+              style={[
+                styles.radioMiddle,
+                { backgroundColor: filterIssue == 2 ? '#fa7935' : '#ADADAD' },
+              ]}>
+              <Text style={styles.textRadio}>Assigned</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={filterResolve}>
+            <View
+              style={[
+                styles.radioMiddle,
+                { backgroundColor: filterIssue == 3 ? '#55c6aa' : '#ADADAD' },
+              ]}>
+              <Text style={styles.textRadio}>Resolve</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={filterClose}>
+            <View
+              style={[
+                styles.radioClose,
+                { backgroundColor: filterIssue == 4 ? 'grey' : '#ADADAD' },
+              ]}>
               <Text style={styles.textRadio}>Close</Text>
             </View>
           </TouchableOpacity>
@@ -143,43 +220,36 @@ export default function Issues() {
   };
 
   const ListFooterComponent = () => {
-    return (
-      <Text style={{ textAlign: 'center', marginVertical: 10 }}>- ~ -</Text>
-    );
+    return newData.length === 0 ? (
+      <View
+        style={{
+          flex: 1,
+          height: ScreenHeight * 0.4,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: 30,
+        }}>
+        <Text style={{ fontSize: 18, color: 'grey', textAlign: 'center' }}>
+          no issues
+        </Text>
+      </View>
+    ) : null;
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderMenu />
-      {newData.length === 0 ? (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingHorizontal: 30,
-          }}>
-          <Text style={{ fontSize: 18, color: '#4D4D4D', textAlign: 'center' }}>
-            The issues are not there yet, add the issue?
-          </Text>
-          <Button
-            label="Add Issue"
-            navigasi={() => navigation.navigate('AddIssues')}
-          />
-        </View>
-      ) : (
-        <FlatList
-          ListHeaderComponent={ListHeaderComponent}
-          contentContainerStyle={styles.containerFlat}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          data={newData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.slug}
-          ListFooterComponent={ListFooterComponent}
-        />
-      )}
+      <FlatList
+        ListHeaderComponent={ListHeaderComponent}
+        contentContainerStyle={styles.containerFlat}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        data={newData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.slug}
+        ListFooterComponent={ListFooterComponent}
+      />
     </SafeAreaView>
   );
 }
@@ -229,6 +299,7 @@ const styles = StyleSheet.create({
     width: ScreenWidth * 0.89,
     backgroundColor: 'white',
     borderRadius: 8,
+    width: 270,
     height: 40,
     marginRight: 5,
     padding: 8,
@@ -237,32 +308,34 @@ const styles = StyleSheet.create({
   radioContainer: {
     flexDirection: 'row',
     marginTop: 30,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
   },
   radioAll: {
-    width: 58,
-    height: 19,
-    backgroundColor: '#055F9D',
+    width: 60,
+    height: 22,
     justifyContent: 'center',
     marginHorizontal: 2,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
   },
-  radioOpen: {
-    width: 58,
-    height: 19,
-    backgroundColor: 'grey',
+  radioMiddle: {
+    width: 60,
+    height: 22,
     justifyContent: 'center',
     marginHorizontal: 2,
+    borderRadius: 4,
   },
   radioClose: {
-    width: 58,
-    height: 19,
-    backgroundColor: 'grey',
+    width: 60,
+    height: 22,
     justifyContent: 'center',
     marginHorizontal: 2,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
   },
   textRadio: {
     fontSize: 11,
@@ -366,7 +439,7 @@ const styles = StyleSheet.create({
 //             </View>
 //           </TouchableOpacity>
 //           <TouchableOpacity onPress={() => {}}>
-//             <View style={styles.radioOpen}>
+//             <View style={styles.radioMiddle}>
 //               <Text style={styles.textRadio}>Open</Text>
 //             </View>
 //           </TouchableOpacity>
@@ -534,7 +607,7 @@ const styles = StyleSheet.create({
 //     borderTopLeftRadius: 10,
 //     borderBottomLeftRadius: 10,
 //   },
-//   radioOpen: {
+//   radioMiddle: {
 //     width: 58,
 //     height: 19,
 //     backgroundColor: 'grey',

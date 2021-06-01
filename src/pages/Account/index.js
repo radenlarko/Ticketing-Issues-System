@@ -55,11 +55,11 @@ export default function Account() {
           </View>
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.card}>
-              <Text style={styles.cardTitle}>23</Text>
+              <Text style={styles.cardTitle}>{authContext.openIssue}</Text>
               <Text style={styles.cardLabel}>Open Issue</Text>
             </View>
             <View style={styles.card}>
-              <Text style={styles.cardTitle}>127</Text>
+              <Text style={styles.cardTitle}>{authContext.closeIssue}</Text>
               <Text style={styles.cardLabel}>Closed Issue</Text>
             </View>
           </View>
