@@ -8,6 +8,7 @@ import {
   View,
   Dimensions,
 } from 'react-native';
+import moment from 'moment';
 import { IconBack2 } from '../../assets';
 import { DetailIssue, HeaderMenu } from '../../components';
 
@@ -20,6 +21,15 @@ const DetailsIssues = ({ route, navigation }) => {
   const priorities_id = item.priorities_id;
   const statuses_id = item.statuses_id;
   const createdAt = item.createdAt;
+
+  // ========== Formate date manual ===========
+  // function formatDate(string) {
+  //   let options = { year: 'numeric', day: 'numeric', month: 'long', };
+  //   return new Date(string).toLocaleDateString([], options);
+  // }
+  // console.log(formatDate(createdAt));
+
+  const newDate = moment(createdAt).format('llll');
 
   let assigned;
   if (assigned_to == 1) {
@@ -82,7 +92,7 @@ const DetailsIssues = ({ route, navigation }) => {
           <DetailIssue label="Category" value={category} />
           <DetailIssue label="Priority" value={priority} />
           <DetailIssue label="Status" value={status} />
-          <DetailIssue label="Created at" value={createdAt} />
+          <DetailIssue label="Created at" value={newDate} />
         </View>
         <View style={{ marginTop: 20 }}>
           <Text style={styles.commentTitle}>Comments</Text>
@@ -119,9 +129,7 @@ const DetailsIssues = ({ route, navigation }) => {
               </Text>
             </View>
             <View style={{ width: ScreenWidth * 0.53 }}>
-              <Text style={styles.commentBodyText}>
-                Done.
-              </Text>
+              <Text style={styles.commentBodyText}>Done.</Text>
             </View>
           </View>
         </View>

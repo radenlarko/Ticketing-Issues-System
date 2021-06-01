@@ -18,6 +18,7 @@ import {
   TextInput,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
 import { HeaderMenu, MyButton } from '../../components';
 import { AuthContext } from '../../components/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -217,9 +218,9 @@ export default function Issues() {
                   : 'Uncategorized'}
               </Text>
             </View>
-            <View>
-              <Text style={{ fontWeight: 'bold', fontSize: 12 }}>
-                20-08-2021
+            <View style={{width: ScreenWidth*0.2}}>
+              <Text style={{ fontWeight: 'bold', fontSize: 12, textAlign: 'right' }}>
+                {moment(item.createdAt).startOf('hour').fromNow()}
               </Text>
             </View>
           </View>
@@ -248,7 +249,12 @@ export default function Issues() {
           alignItems: 'center',
           margin: 20,
         }}>
-        {loadData == newData.length ? <MyButton label="Load More" navigasi={() => setLoadData(loadData + 5)} /> : null}
+        {loadData == newData.length ? (
+          <MyButton
+            label="Load More"
+            navigasi={() => setLoadData(loadData + 5)}
+          />
+        ) : null}
       </View>
     );
   };

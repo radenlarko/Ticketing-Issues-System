@@ -13,6 +13,7 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
+import moment from 'moment';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Iconss from 'react-native-vector-icons/FontAwesome';
 import { AuthContext } from '../../components/AuthContext';
@@ -207,9 +208,9 @@ const Home = () => {
                   : 'Uncategorized'}
               </Text>
             </View>
-            <View>
-              <Text style={{ fontWeight: 'bold', fontSize: 12 }}>
-                20-08-2021
+            <View style={{width: ScreenWidth*0.2}}>
+              <Text style={{ fontWeight: 'bold', fontSize: 12, textAlign: 'right' }}>
+                {moment(item.createdAt).startOf('hour').fromNow()}
               </Text>
             </View>
           </View>
