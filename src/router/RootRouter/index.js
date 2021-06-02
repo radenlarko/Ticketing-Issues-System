@@ -7,9 +7,9 @@ const RootStack = createStackNavigator();
 const RootRouter = () => {
   return (
     <RootStack.Navigator headerMode='none' initialRouteName="Splash" >
-      <RootStack.Screen name="Splash" component={Splash} />
-      <RootStack.Screen name="SignIn" component={SignIn} />
-      <RootStack.Screen name="SignUp" component={SignUp} />
+      <RootStack.Screen name="Splash" component={Splash} options={{animationEnabled: false}} />
+      <RootStack.Screen name="SignIn" component={SignIn} options={{animationEnabled: false}} />
+      <RootStack.Screen name="SignUp" component={SignUp} options={{animationEnabled: false}} />
     </RootStack.Navigator>
   )
 };
