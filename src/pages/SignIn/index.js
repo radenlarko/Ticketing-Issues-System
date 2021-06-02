@@ -10,10 +10,15 @@ import {
   TouchableOpacity,
   Alert,
   StatusBar,
+  ImageBackground,
+  Dimensions,
+  Image,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../../components/AuthContext';
+import { BgLogin, IconAccountRoot } from '../../assets';
+import { MyButton } from '../../components';
 
 const SignIn = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -130,40 +135,54 @@ const SignIn = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-      <Text
-        style={{
-          textAlign: 'center',
-          marginVertical: 50,
-          fontSize: 18,
-          fontWeight: 'bold',
-        }}>
-        Sign In Screen
-      </Text>
+    <ImageBackground style={styles.container} source={BgLogin}>
+      <StatusBar barStyle="light-content" backgroundColor="#055f9d" />
+      <View style={{ alignItems: 'center', marginBottom: 10 }}>
+        <IconAccountRoot />
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 32,
+            color: 'white',
+          }}>
+          Login
+        </Text>
+      </View>
       <View style={styles.action}>
-        <FontAwesome name="user" color="grey" size={20} />
+        <FontAwesome name="user" color="white" size={20} />
         <TextInput
           placeholder="enter your email"
           style={styles.textInput}
           autoCapitalize="none"
           onChangeText={(value) => textInputChange(value)}
           onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
-          keyboardType= 'email-address'
+          keyboardType="email-address"
         />
         {data.check_textInputChange ? (
-          <Feather name="check-circle" color="#24e35e" size={16} />
-        ) : null}
+          <Feather
+            name="check-circle"
+            color="#24e35e"
+            size={16}
+            style={{ marginLeft: -30 }}
+          />
+        ) : (
+          <Feather
+            name="check-circle"
+            color="white"
+            size={16}
+            style={{ marginLeft: -30 }}
+          />
+        )}
       </View>
       {data.isValidUser ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>
             Email must be in the correct format.
           </Text>
         </View>
       )}
       <View style={styles.action}>
-        <FontAwesome name="lock" color="grey" size={22} />
+        <FontAwesome name="lock" color="white" size={22} />
         <TextInput
           placeholder="enter your password"
           secureTextEntry={data.secureTextEntry ? true : false}
@@ -172,7 +191,9 @@ const SignIn = ({ navigation }) => {
           onChangeText={(value) => handlePasswordChange(value)}
           onEndEditing={(e) => handleValidPassword(e.nativeEvent.text)}
         />
-        <TouchableOpacity onPress={updateSecureTextEntry}>
+        <TouchableOpacity
+          onPress={updateSecureTextEntry}
+          style={{ marginLeft: -30 }}>
           {data.secureTextEntry ? (
             <Feather name="eye-off" color="grey" size={16} />
           ) : (
@@ -181,46 +202,57 @@ const SignIn = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       {data.isValidPassword ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>Password must be 8 characters long.</Text>
         </View>
       )}
-      <TouchableOpacity onPress={loginHandle}>
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>
-            {loading ? 'loading...' : 'Sign In'}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginHorizontal: 20,
+          marginTop: 30,
+          alignItems: 'center',
+        }}>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text
+            style={[styles.buttonText, { textDecorationLine: 'underline', fontSize: 14 }]}>
+            Sign Up
           </Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <View style={[styles.button, { backgroundColor: 'grey' }]}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        <MyButton
+          label={loading ? 'loading...' : 'Sign In'}
+          navigasi={loginHandle}
+        />
+      </View>
       <View style={{ marginVertical: 20 }}></View>
-    </ScrollView>
+    </ImageBackground>
   );
 };
 
 export default SignIn;
 
+let ScreenHeight = Dimensions.get('window').height;
+let ScreenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: '5%',
+    justifyContent: 'center',
   },
   textInput: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
+    width: ScreenWidth * 0.8,
+    marginTop: Platform.OS === 'ios' ? 0 : -15,
+    marginLeft: 10,
     paddingLeft: 10,
     color: '#242424',
+    backgroundColor: 'white',
+    borderRadius: 8,
   },
   action: {
     flexDirection: 'row',
-    marginVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#c4c4c4',
-    paddingBottom: 5,
+    marginTop: 30,
   },
   button: {
     backgroundColor: '#055F9D',

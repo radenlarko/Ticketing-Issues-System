@@ -10,10 +10,14 @@ import {
   TouchableOpacity,
   StatusBar,
   Alert,
+  Dimensions,
+  ImageBackground,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../../components/AuthContext';
+import { BgLogin, IconAccountRoot } from '../../assets';
+import { MyButton } from '../../components';
 
 const SignUp = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
@@ -212,19 +216,21 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#f2f2f2" />
-      <Text
-        style={{
-          textAlign: 'center',
-          marginVertical: 50,
-          fontSize: 18,
-          fontWeight: 'bold',
-        }}>
-        Sign Up Screen
-      </Text>
+    <ImageBackground source={BgLogin} style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#055f9d" />
+      <View style={{ alignItems: 'center', marginBottom: 10 }}>
+        <IconAccountRoot />
+        <Text
+          style={{
+            textAlign: 'center',
+              fontSize: 32,
+              color: 'white',
+          }}>
+          Register
+        </Text>
+      </View>
       <View style={styles.action}>
-        <FontAwesome name="user" color="grey" size={20} />
+        <FontAwesome name="user" color="white" size={20} />
         <TextInput
           placeholder="enter your username"
           style={styles.textInput}
@@ -233,16 +239,18 @@ const SignUp = ({ navigation }) => {
           onEndEditing={(e) => handleValidUser(e.nativeEvent.text)}
         />
         {data.check_userInputChange ? (
-          <Feather name="check-circle" color="#24e35e" size={16} />
-        ) : null}
+          <Feather name="check-circle" color="#24e35e" size={16} style={{ marginLeft: -30 }} />
+        ) : (
+          <Feather name="check-circle" color="white" size={16} style={{ marginLeft: -30 }} />
+        )}
       </View>
       {data.isValidUser ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>Username minimum 6 characters long.</Text>
         </View>
       )}
       <View style={styles.action}>
-        <FontAwesome name="user" color="grey" size={20} />
+        <FontAwesome name="user" color="white" size={20} />
         <TextInput
           placeholder="enter your email"
           style={styles.textInput}
@@ -252,18 +260,20 @@ const SignUp = ({ navigation }) => {
           keyboardType="email-address"
         />
         {data.check_emailInputChange ? (
-          <Feather name="check-circle" color="#24e35e" size={16} />
-        ) : null}
+          <Feather name="check-circle" color="#24e35e" size={16} style={{ marginLeft: -30 }} />
+        ) : (
+          <Feather name="check-circle" color="white" size={16} style={{ marginLeft: -30 }} />
+        )}
       </View>
       {data.isValidEmail ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>
             Email must be in the correct format.
           </Text>
         </View>
       )}
       <View style={styles.action}>
-        <FontAwesome name="lock" color="grey" size={22} />
+        <FontAwesome name="lock" color="white" size={22} />
         <TextInput
           placeholder="enter your password"
           secureTextEntry={data.securePassword ? true : false}
@@ -272,7 +282,7 @@ const SignUp = ({ navigation }) => {
           onChangeText={(value) => handlePasswordChange(value)}
           onEndEditing={(e) => handleValidPassword(e.nativeEvent.text)}
         />
-        <TouchableOpacity onPress={updateSecurePassword}>
+        <TouchableOpacity onPress={updateSecurePassword} style={{ marginLeft: -30 }}>
           {data.securePassword ? (
             <Feather name="eye-off" color="grey" size={16} />
           ) : (
@@ -281,12 +291,12 @@ const SignUp = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       {data.isValidPassword ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>Password must be 8 characters long.</Text>
         </View>
       )}
       <View style={styles.action}>
-        <FontAwesome name="lock" color="grey" size={22} />
+        <FontAwesome name="lock" color="white" size={22} />
         <TextInput
           placeholder="confirm your password"
           secureTextEntry={data.secureConfirm_Pass ? true : false}
@@ -295,7 +305,7 @@ const SignUp = ({ navigation }) => {
           onChangeText={(value) => handleConfirm_PassChange(value)}
           onEndEditing={(e) => handleValidConfirm_Pass(e.nativeEvent.text)}
         />
-        <TouchableOpacity onPress={updateSecureConfirm_pass}>
+        <TouchableOpacity onPress={updateSecureConfirm_pass} style={{ marginLeft: -30 }}>
           {data.secureConfirm_Pass ? (
             <Feather name="eye-off" color="grey" size={16} />
           ) : (
@@ -304,48 +314,59 @@ const SignUp = ({ navigation }) => {
         </TouchableOpacity>
       </View>
       {data.isValidConfirm_Pass ? null : (
-        <View>
+        <View style={{marginLeft: 24}}>
           <Text style={styles.errMsg}>
             Password confirmation does not match!
           </Text>
         </View>
       )}
-      <TouchableOpacity onPress={registerHandle}>
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>
-            {loading ? 'Loading...' : 'Sign Up'}
-          </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginHorizontal: 20,
+          marginTop: 30,
+          alignItems: 'center',
+        }}>
+        <View style={{alignItems: 'flex-start'}}>
+          <Text style={{color: 'white', fontSize: 10}}>already have an account?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+            <Text style={[styles.buttonText, { textDecorationLine: 'underline', fontSize: 14 }]}>Sign In</Text>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <View style={[styles.button, { backgroundColor: 'grey' }]}>
-          <Text style={styles.buttonText}>Sign In</Text>
+        <MyButton 
+          label={loading ? 'Loading...' : 'Sign Up'}
+          navigasi={registerHandle}
+        />
         </View>
-      </TouchableOpacity>
       <View style={{ marginVertical: 20 }}></View>
-    </ScrollView>
+    </ImageBackground>
   );
 };
 
 export default SignUp;
 
+let ScreenHeight = Dimensions.get('window').height;
+let ScreenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: '5%',
+    justifyContent: 'center',
   },
   textInput: {
-    flex: 1,
-    marginTop: Platform.OS === 'ios' ? 0 : -12,
+    width: ScreenWidth * 0.8,
+    marginTop: Platform.OS === 'ios' ? 0 : -15,
+    marginLeft: 10,
     paddingLeft: 10,
     color: '#242424',
+    backgroundColor: 'white',
+    borderRadius: 8,
   },
   action: {
     flexDirection: 'row',
-    marginVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#c4c4c4',
-    paddingBottom: 5,
+    marginTop: 30,
   },
   button: {
     backgroundColor: '#055F9D',

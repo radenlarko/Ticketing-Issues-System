@@ -19,6 +19,7 @@ import IconAssigned from './Assigned.svg';
 import IconResolved from './Resolved.svg';
 import IconClose2 from './Close2.svg';
 import IconLogout from './Logout.svg';
+import IconAccountRoot from './AccountRoot.svg';
 
 export {
   IconAccount,
@@ -42,4 +43,5 @@ export {
   IconResolved,
   IconClose2,
   IconLogout,
+  IconAccountRoot,
 };
