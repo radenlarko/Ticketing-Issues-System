@@ -39,7 +39,14 @@ const SignUp = ({ navigation }) => {
   });
 
   const userInputChange = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.includes(' ') || value.includes('.')) {
+      setData({
+        ...data,
+        username: value,
+        check_userInputChange: false,
+        isValidUser: false,
+      });
+    } else if (value.trim().length >= 6) {
       setData({
         ...data,
         username: value,
@@ -57,7 +64,7 @@ const SignUp = ({ navigation }) => {
   };
 
   const emailInputChange = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.trim().length >= 6 && value.includes('@') && value.includes('.com') || value.includes('.co.id')) {
       setData({
         ...data,
         email: value,
@@ -129,6 +136,39 @@ const SignUp = ({ navigation }) => {
       return null;
     }
 
+    if (!data.isValidUser) {
+      Alert.alert(
+        'Error!',
+        'Username must be at least 6 characters long and must not contain spaces and dots',
+        [{ text: 'Ok' }],
+      );
+
+      setLoading(false);
+      return null;
+    }
+
+    if (!data.isValidEmail) {
+      Alert.alert(
+        'Error!',
+        'Email must be in the correct format',
+        [{ text: 'Ok' }],
+      );
+
+      setLoading(false);
+      return null;
+    }
+
+    if (!data.isValidPassword) {
+      Alert.alert(
+        'Error!',
+        'Password must be at least 8 character long',
+        [{ text: 'Ok' }],
+      );
+
+      setLoading(false);
+      return null;
+    }
+
     if (data.password !== data.confirm_pass) {
       Alert.alert('Wrong Input!', 'Password does not match', [{ text: 'Ok' }]);
 
@@ -151,6 +191,9 @@ const SignUp = ({ navigation }) => {
       if (error.error) {
         console.log('Form tidak boleh kosong!!');
         Alert.alert('Error!', 'Field cannot be empty!!', [{ text: 'Ok' }]);
+      } else if (error.errors) {
+        console.log('username has already been taken');
+        Alert.alert('Error!', 'username has already been taken', [{ text: 'Ok' }]);
       } else {
         console.log('Gagal Register!!');
         Alert.alert('Error!', 'Registration failed!!', [{ text: 'Ok' }]);
@@ -160,7 +203,12 @@ const SignUp = ({ navigation }) => {
   };
 
   const handleValidUser = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.includes(' ') || value.includes('.')) {
+      setData({
+        ...data,
+        isValidUser: false,
+      });
+    } else if (value.trim().length >= 6) {
       setData({
         ...data,
         isValidUser: true,
@@ -174,7 +222,7 @@ const SignUp = ({ navigation }) => {
   };
 
   const handleValidEmail = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.trim().length >= 6 && value.includes('@') && value.includes('.com') || value.includes('.co.id')) {
       setData({
         ...data,
         isValidEmail: true,
@@ -246,7 +294,7 @@ const SignUp = ({ navigation }) => {
       </View>
       {data.isValidUser ? null : (
         <View style={{marginLeft: 24}}>
-          <Text style={styles.errMsg}>Username minimum 6 characters long.</Text>
+          <Text style={styles.errMsg}>Username must be at least 6 characters long and must not contain spaces and dots.</Text>
         </View>
       )}
       <View style={styles.action}>

@@ -201,6 +201,12 @@ const AuthProvider = ({ children }) => {
         return Promise.reject(data);
       }
 
+      if (data.errors) {
+        return Promise.reject(data);
+      }
+
+      console.log('Sign Up: ', data)
+
       return Promise.resolve(data);
     } catch (error) {
       console.log(error);

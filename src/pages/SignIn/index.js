@@ -35,7 +35,7 @@ const SignIn = ({ navigation }) => {
   const { signIn } = useContext(AuthContext);
 
   const textInputChange = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.trim().length >= 6 && value.includes('@') && value.includes('.com') || value.includes('.co.id')) {
       setData({
         ...data,
         email: value,
@@ -89,6 +89,28 @@ const SignIn = ({ navigation }) => {
       return null;
     }
 
+    if (!data.isValidUser) {
+      Alert.alert(
+        'Error!',
+        'Email must be in the correct format',
+        [{ text: 'Ok' }],
+      );
+
+      setLoading(false);
+      return null;
+    }
+
+    if (!data.isValidPassword) {
+      Alert.alert(
+        'Error!',
+        'Password must be 8 character long',
+        [{ text: 'Ok' }],
+      );
+
+      setLoading(false);
+      return null;
+    }
+
     try {
       const user = await signIn(data.email, data.password);
 
@@ -107,7 +129,7 @@ const SignIn = ({ navigation }) => {
   }, [data, setLoading, signIn]);
 
   const handleValidUser = (value) => {
-    if (value.trim().length >= 6) {
+    if (value.trim().length >= 6 && value.includes('@') && value.includes('.com') || value.includes('.co.id')) {
       setData({
         ...data,
         isValidUser: true,
